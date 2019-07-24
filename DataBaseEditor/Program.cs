@@ -12,10 +12,12 @@ namespace DataBaseEditor
         /// Główny punkt wejścia dla aplikacji.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            ProgramSettings.userName = args[0];
+            ProgramSettings.userPassword = args[1];
             Application.Run(new DBEditorMainForm());
         }
     }

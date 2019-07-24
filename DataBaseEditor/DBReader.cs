@@ -23,7 +23,7 @@ namespace DataBaseEditor
             try
             {
                 SqlCommand sqlCommand = new SqlCommand(sqlQuery, dbConnection);
-                dbConnection.Open();                                        //System.InvalidOperationException: „Właściwość ConnectionString nie została zainicjowana.”
+                dbConnection.Open();
                 SqlDataReader sqlReader = sqlCommand.ExecuteReader();
 
                 int numberOfColumns = sqlReader.FieldCount;
@@ -48,7 +48,8 @@ namespace DataBaseEditor
             }
             catch (System.Data.SqlClient.SqlException e)
             {
-                MyMessageBox.display(e.Message, MessageBoxType.Error);
+                MyMessageBox.display(e.Message + "\r\n" + dbConnection.ConnectionString, MessageBoxType.Error);
+               
             }
 
             dbConnection.Close();

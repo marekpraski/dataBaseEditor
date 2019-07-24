@@ -19,37 +19,54 @@ namespace DataBaseEditor
     {
         private SqlConnection dbConnection;
         private string sqlQuery;
-        private string dbName;
         private string configFilePath;
-        string configFileText;
-        string dbConnectionString;
+        private string configFileText;
+        private string dbConnectionString;
         private string serverName;
+        private string tableName;
+        private string dbName;
+        private string userName = ProgramSettings.userName;
+        private string userPassword = ProgramSettings.userPassword;
         private bool configFileValidated = true;
-        private bool configFileValidationWasDone = false;       //jest to bezpiecznik, gdybym w programie analizę pliku konfiguracyjnego dał zanim plik został zwalidowany, bo z metody analizującej ściągnąłem wszystkie zabezpieczenia
+        private bool configFileValidationWasDone = false;       //jest to bezpiecznik, gdybym w kodzie analizę pliku konfiguracyjnego dał zanim plik został zwalidowany, bo z metody analizującej ściągnąłem wszystkie zabezpieczenia
 
         public DBConnector ()
         {
         }
 
-        private void generateConnection()
+        private void generateConnectionString()
         {
-            
-        }
-        private void testConnection()
-        {
+            //przykładowy connection string
+            //Data Source=laptop08\sqlexpress;Initial Catalog=dbrezerwer_test;User ID=marek;Password=root
+
+            dbConnectionString = "Data Source=" + serverName + ";Initial Catalog=" + dbName + ";User ID=" + userName + ";Password=" + userPassword;
 
         }
+        private bool testConnection()
+        {
+            try
+            {
+                dbConnection.Open();
+                dbConnection.Close();
+                return true;
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                MyMessageBox.display(e.Message, MessageBoxType.Error);
+            }
+            return false;
+        }
 
-        public string getDBName(ref string sqlQuery)
+        public string getTableName(ref string sqlQuery)
         {
             this.sqlQuery = sqlQuery;
             TextManipulator tm = new TextManipulator();
-            dbName = extractDBName(ref tm);
-            return dbName;
+            extractTableName(ref tm);
+            return tableName;
         }
 
         //wyciąga nazwę db z kwerendy wpisanej przez użytkownika
-        private string extractDBName(ref TextManipulator tm)
+        private void extractTableName(ref TextManipulator tm)
         {
             //znajduję położenie wyrazu kluczowego "from" w kwerendzie
             List<int> keyWordFromPosition = tm.getSubstringStartPositions(sqlQuery, "from");
@@ -60,20 +77,18 @@ namespace DataBaseEditor
                 int firstSpacePosition = textAfterFrom.IndexOf(" ");
                 if (firstSpacePosition == -1)   //brak spacji
                 {
-                    dbName = textAfterFrom;
+                    tableName = textAfterFrom;
                 }
                 else
                 {
-                    dbName = textAfterFrom.Substring(0, firstSpacePosition);
+                    tableName = textAfterFrom.Substring(0, firstSpacePosition);
                 }
-
-                return dbName;
             }
             catch (System.ArgumentOutOfRangeException e)
             {
                 MyMessageBox.display("Błąd w kwerendzie", MessageBoxType.Error);
+                tableName = "";
             }
-            return dbName;
         }
 
         public ref SqlConnection getDBConnection (ConnectionSources source, ConnectionTypes type)
@@ -85,16 +100,39 @@ namespace DataBaseEditor
                         break;
                     case ConnectionSources.serverNameInFile:
                         getServerNameFromFile(ProgramSettings.connectionStringDelimiter);
-                        generateConnection();
+                        getDBNameFromFile(ProgramSettings.databaseNameDelimiter);
+                        generateConnectionString();
                         break;
                 }
+
             dbConnection = new SqlConnection(dbConnectionString);
+
+            //testConnection();     //nie działa tak jak myślałem, tzn zajmuje długo, nie tak szybko jak testowanie połaczenia przy ustawianiu źródła danych w Windows
             return ref dbConnection;
+        }
+
+        private void getDBNameFromFile(string delimiter)
+        {
+            if (configFileValidationWasDone)
+            {
+                dbName = readStringFromFile(delimiter);
+            }
+            else
+            {
+                dbName = "";
+            }
         }
 
         private void getServerNameFromFile(string delimiter)
         {
-            serverName = "";
+            if (configFileValidationWasDone)
+            {
+                serverName = readStringFromFile(delimiter);
+            }
+            else
+            {
+                serverName = "";
+            }
         }
 
         public bool validateConfigFile()
@@ -133,15 +171,20 @@ namespace DataBaseEditor
         }
 
         //z pliku tekstowego wyciąga połączenie do serwera na podstawie znacznika "delimiter"
+        private string readStringFromFile(string delimiter)
+        {
+            TextManipulator tm = new TextManipulator();
+            List<int> indexes = tm.getSubstringStartPositions(configFileText, delimiter);
+            int startIndex = indexes[0] + delimiter.Length + 1;         //kompensuję na > po znaczniku
+            int connStringLength = indexes[1] - startIndex - 2;         //kompensuję na </ przed znacznikiem
+            return configFileText.Substring(startIndex, connStringLength);
+        }
+
         private void readConnStringFromFile(string delimiter)
         {
             if (configFileValidationWasDone)
-            {
-                TextManipulator tm = new TextManipulator();
-                List<int> indexes = tm.getSubstringStartPositions(configFileText, delimiter);
-                int startIndex = indexes[0] + delimiter.Length + 1;         //kompensuję na > po znaczniku
-                int connStringLength = indexes[1] - startIndex - 2;         //kompensuję na </ przed znacznikiem
-                dbConnectionString = configFileText.Substring(startIndex, connStringLength);
+            {                
+                dbConnectionString = readStringFromFile(delimiter);
             }
             else
             {

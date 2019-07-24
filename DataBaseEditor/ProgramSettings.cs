@@ -13,6 +13,9 @@ namespace DataBaseEditor
         //ustawienia pliku konfiguracyjnego
         public static string configFileName = "dbEditorConf.xml";
         public static string connectionStringDelimiter = "server";
+        public static string databaseNameDelimiter = "db_name";
         public static string configFilePath = "";
+        public static string userName = "";
+        public static string userPassword = "";
     }
 }

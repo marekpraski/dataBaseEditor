@@ -186,8 +186,8 @@ namespace DataBaseEditor
             if (configFileValidated)
             {
                 sqlQuery = sqlQueryTextBox.Text;
-                dbName = connector.getDBName(ref sqlQuery);
-                dbConnection = connector.getDBConnection(ConnectionSources.wholeConnectionInFile, ConnectionTypes.sqlAuthorisation);
+                dbName = connector.getTableName(ref sqlQuery);
+                dbConnection = connector.getDBConnection(ConnectionSources.serverNameInFile, ConnectionTypes.sqlAuthorisation);
 
                 if (dg1Handler.checkChangesExist())
                 {
