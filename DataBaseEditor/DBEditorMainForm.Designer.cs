@@ -40,6 +40,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.pomocToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -148,11 +149,23 @@
             this.pomocToolStripMenuItem.Text = "pomoc";
             this.pomocToolStripMenuItem.Click += new System.EventHandler(this.PomocToolStripMenuItem_Click);
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.ForeColor = System.Drawing.Color.Red;
+            this.label2.Location = new System.Drawing.Point(136, 28);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(236, 13);
+            this.label2.TabIndex = 7;
+            this.label2.Text = "połączenie z serwerem nie zostało zdefiniowane";
+            this.label2.Visible = false;
+            // 
             // DBEditorMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(549, 529);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.sqlQueryTextBox);
             this.Controls.Add(this.dataGridView1);
@@ -185,6 +198,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem pomocToolStripMenuItem;
+        private System.Windows.Forms.Label label2;
     }
 }
 

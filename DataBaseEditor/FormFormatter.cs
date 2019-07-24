@@ -11,17 +11,17 @@ namespace DataBaseEditor
     //zmienia układ przekazanego formularza, raczej nie jest uniwersalna tylko chodziło mi o oddzielenie tej funkcjonalności
     public class FormFormatter
     {
-        int oldButtonXLocation = 464;       //położenie buttonów przy 4 kolumnach
-        int originalDatagridWidth = 444;    //szerokość datagridu mającego 4 kolumny to 444
-        int dataGridPadding = 44;           //szerokość datagridu mającego 0 kolumn
-        int originalFormWidth = 565;        //szerokość formularza dla datagridu mającego 4 kolumny
+        int originalButtonXLocation = 464;       //położenie buttonów przy 4 kolumnach
+        int originalDatagridWidth = 444;        //szerokość datagridu mającego 4 kolumny to 444
+        int dataGridPadding = 44;               //szerokość datagridu mającego 0 kolumn
+        int originalFormWidth = 565;            //szerokość formularza dla datagridu mającego 4 kolumny
         int displayButtonYLocation = 123;
         int undoButtonYLocation = 169;
         int saveButtonYLocation = 219;
         int defaultNrOfDatagridColumns = 4;
 
         private List<DataGridViewColumn> columnsAdded;
-        int dataGridWidth;
+        private int dataGridWidth;
         public FormFormatter ()
         {
             columnsAdded = new List<DataGridViewColumn>();
@@ -47,7 +47,7 @@ namespace DataBaseEditor
                 if (dataGridPadding + numberOfHeaders * 100 > 1046)     //ograniczam max szerokość tworzonego datagrida do szerokości potrzebnej dla 10 kolumn
                 {
                     dataGridWidth = 1046;
-                    dataGrid.Width = dataGridWidth;     //celowa redundancja, dla debugowania
+                    dataGrid.Width = dataGridWidth;     //celowa redundancja, bo używam zmiennej dataGridWidth do ustawienia położenia buttonów i szerokości głównej formatki
                 }
                 else
                 {
@@ -57,7 +57,8 @@ namespace DataBaseEditor
             }
             else
             {
-                dataGrid.Width = originalDatagridWidth;
+                dataGridWidth = originalDatagridWidth;
+                dataGrid.Width = dataGridWidth;
             }
         }
 
@@ -82,19 +83,19 @@ namespace DataBaseEditor
 
         public void changeUndoButtonLocation(ref Button button)
         {
-            Point newUndoButtonLocation = new Point(dataGridWidth + (oldButtonXLocation - originalDatagridWidth), undoButtonYLocation);
+            Point newUndoButtonLocation = new Point(dataGridWidth + (originalButtonXLocation - originalDatagridWidth), undoButtonYLocation);
             button.Location = newUndoButtonLocation;
         }
 
         public void changeSaveButtonLocation(ref Button button)
         {
-            Point newSaveButtonLocation = new Point(dataGridWidth + (oldButtonXLocation - originalDatagridWidth), saveButtonYLocation);
+            Point newSaveButtonLocation = new Point(dataGridWidth + (originalButtonXLocation - originalDatagridWidth), saveButtonYLocation);
             button.Location = newSaveButtonLocation;
         }
 
         public void changeDisplayButtonLocation(ref Button button)
         {
-            Point newDisplayButtonLocation = new Point(dataGridWidth + (oldButtonXLocation - originalDatagridWidth), displayButtonYLocation);
+            Point newDisplayButtonLocation = new Point(dataGridWidth + (originalButtonXLocation - originalDatagridWidth), displayButtonYLocation);
             button.Location = newDisplayButtonLocation;
         }
 

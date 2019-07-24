@@ -9,22 +9,21 @@ namespace DataBaseEditor
 {
     class DBReader
     {
-        
-        private string connectionString;
+        private SqlConnection dbConnection;
         private QueryData queryData;
-        public DBReader(string connectionString)
+
+        public DBReader(SqlConnection dbConnection)
         {
-            this.connectionString = connectionString;
+            this.dbConnection = dbConnection;
             queryData = new QueryData();
         }
+
         public QueryData readFromDB(string sqlQuery)
         {
-            SqlConnection dbconnection = new SqlConnection(connectionString);
-
             try
             {
-                SqlCommand sqlCommand = new SqlCommand(sqlQuery, dbconnection);
-                dbconnection.Open();
+                SqlCommand sqlCommand = new SqlCommand(sqlQuery, dbConnection);
+                dbConnection.Open();                                        //System.InvalidOperationException: „Właściwość ConnectionString nie została zainicjowana.”
                 SqlDataReader sqlReader = sqlCommand.ExecuteReader();
 
                 int numberOfColumns = sqlReader.FieldCount;
@@ -52,8 +51,7 @@ namespace DataBaseEditor
                 MyMessageBox.display(e.Message, MessageBoxType.Error);
             }
 
-            // try-catch dotąd
-            dbconnection.Close();
+            dbConnection.Close();
             return queryData;
         }
     }

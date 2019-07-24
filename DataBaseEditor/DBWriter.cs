@@ -9,10 +9,11 @@ namespace DataBaseEditor
 {
     class DBWriter
     {
-        private string connectionString;
-        public DBWriter(string connectionString)
+        private SqlConnection dbConnection;
+
+        public DBWriter(SqlConnection connection)
         {
-            this.connectionString = connectionString;
+            this.dbConnection = connection;
         }
 
         public void writeToDB(string sqlQuery)
@@ -24,14 +25,13 @@ namespace DataBaseEditor
         
         public void writeToDB(List<string> queries)
         {
-            SqlConnection dbconnection = new SqlConnection(connectionString);
             SqlDataAdapter adapter = new SqlDataAdapter();
-            dbconnection.Open();
+            dbConnection.Open();
             foreach (string query in queries)
             {
                 try
                 {
-                    SqlCommand command = new SqlCommand(query, dbconnection);
+                    SqlCommand command = new SqlCommand(query, dbConnection);
                     adapter.InsertCommand = command;
                     adapter.InsertCommand.ExecuteNonQuery();
                     command.Dispose();
@@ -41,7 +41,7 @@ namespace DataBaseEditor
                     MyMessageBox.display(e.Message, MessageBoxType.Error);
                 }
             }
-            dbconnection.Close();
+            dbConnection.Close();
         }
     }
 }

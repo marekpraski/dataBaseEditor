@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Data.SqlClient;
 
 namespace DataBaseEditor
 {
@@ -14,15 +15,19 @@ namespace DataBaseEditor
         private DataGridHandler dg1Handler;
         private FormFormatter formatter;
         private DataGridCell changedCell;
+        private DBConnector connector;
+        private bool configFileValidated;
         private string sqlQuery;
         private QueryData queryData;
-        private string serverConnection;
+        private SqlConnection dbConnection;
         private string dbName = "";
 
         public DBEditorMainForm()
         {
             InitializeComponent();
-            serverConnection = ProgramSettings.getDBConnectionStringFromFile();
+            connector = new DBConnector();
+            configFileValidated = connector.validateConfigFile();
+            label2.Visible = !configFileValidated;
             dg1Handler = new DataGridHandler();  //każdy datagrid musi mieć swoją instancję DataGridHandlera
             formatter = new FormFormatter();
 
@@ -36,7 +41,7 @@ namespace DataBaseEditor
             dataGrid.Columns[0].ReadOnly = true;
             dataGrid.Columns[0].DefaultCellStyle.BackColor = Color.LightGray;
 
-            DBReader reader = new DBReader(serverConnection);
+            DBReader reader = new DBReader(dbConnection);
             queryData = reader.readFromDB(sqlQuery);
 
             //jeżeli kwerenda błędna to nie zwróci wyników
@@ -90,7 +95,7 @@ namespace DataBaseEditor
 
         private void saveButton_Click(object sender, EventArgs e)
         {
-            DBWriter writer = new DBWriter(serverConnection);
+            DBWriter writer = new DBWriter(dbConnection);
             string query;
             while (dg1Handler.checkChangesExist())
             {
@@ -113,33 +118,6 @@ namespace DataBaseEditor
             object primaryKey = dg1Handler.getCellPrimaryKey(cell);
             string updateQuery = "update " + dbName + " set " + columnName + "=" + cellConverter.getConvertedValue(ref cell) + " where " + primaryKeyColumnName + "='" + primaryKey.ToString() + "'";
             return updateQuery;
-        }
-
-        private string getDBName(ref TextManipulator tm)
-        {
-            //znajduję położenie wyrazu kluczowego "from" w kwerendzie
-            List<int> keyWordFromPosition = tm.getSubstringStartPositions(sqlQuery, "from");
-            try
-            {
-                //wywala bład gdy kwerenda jest na tyle bezsensowna, że nie potrafi wyłuskać sensownego wyrazu, który mógłby być nazwą bazy danych
-                string textAfterFrom = sqlQuery.Substring(keyWordFromPosition[0] + 5);  //dodaję długość wyrazu from i jedną spację
-                int firstSpacePosition = textAfterFrom.IndexOf(" ");
-                if (firstSpacePosition == -1)   //brak spacji
-                {
-                    dbName = textAfterFrom;
-                }
-                else
-                {
-                    dbName = textAfterFrom.Substring(0, firstSpacePosition);
-                }
-
-                return dbName;
-            }
-              catch(System.ArgumentOutOfRangeException e)
-            {
-                MyMessageBox.display("Błąd w kwerendzie", MessageBoxType.Error);
-            }
-            return dbName;
         }
 
         private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
@@ -182,8 +160,8 @@ namespace DataBaseEditor
 
         private void UndoButton_Click(object sender, EventArgs e)
         {
-            DataGridCell recoveredCell = new DataGridCell();
-            recoveredCell = dg1Handler.getLastCellChangedAndUndoChanges();
+            //DataGridCell recoveredCell = new DataGridCell();
+            DataGridCell recoveredCell = dg1Handler.getLastCellChangedAndUndoChanges();
 
             object oldCellValue = recoveredCell.getCellValue(cellValueTypes.oldValue);
             int rowIndex = recoveredCell.getCellIndex(cellIndexTypes.rowIndex);
@@ -203,28 +181,30 @@ namespace DataBaseEditor
         private void displayButton_Click(object sender, EventArgs e)
         {
             //jest to pierwszy przycisk, który użytkownik może nacisnąć po wpisaniu kwerendy w pole tekstowe
-            //przekazuję kwerendę do DBConnectora w celu utworzenia połaczenia
+            //przekazuję kwerendę do DBConnectora w celu utworzenia połaczenia, wyciągam od razu nazwę bazy danych, jest potrzebna później
 
-         //   DBConnector connector = new DBConnector(ref sqlQuery);     
-            TextManipulator tm = new TextManipulator();
-            sqlQuery = tm.removeExcessWhiteSpaces(sqlQueryTextBox.Text);
-            string dbName = getDBName(ref tm);
-
-            if (dg1Handler.checkChangesExist())
+            if (configFileValidated)
             {
-                if (MyMessageBox.display("Czy zapisać zmiany?", MessageBoxType.YesNo) == MessageBoxResults.Yes)
+                sqlQuery = sqlQueryTextBox.Text;
+                dbName = connector.getDBName(ref sqlQuery);
+                dbConnection = connector.getDBConnection(ConnectionSources.wholeConnectionInFile, ConnectionTypes.sqlAuthorisation);
+
+                if (dg1Handler.checkChangesExist())
                 {
-                    //zaimplementować 
+                    if (MyMessageBox.display("Czy zapisać zmiany?", MessageBoxType.YesNo) == MessageBoxResults.Yes)
+                    {
+                        //zaimplementować 
+                    }
+                }
+                else
+                {
+                    dg1Handler.Dispose();               //likwiduję starą instancję utworzoną w konstruktorze, bo jest to de facto wyświetlenie od zera i operacje na datagridzie od zera
+                    dg1Handler = new DataGridHandler();  //każdy datagrid musi mieć swoją instancję DataGridHandlera
+                    dataGridView1.Rows.Clear();
+                    dataGridView1.Refresh();
+                    populateDatagrid(ref dataGridView1);
                 }
             }
-            else
-            {
-                dg1Handler.Dispose();               //likwiduję starą instancję utworzoną w konstruktorze, bo jest to de facto wyświetlenie od zera i operacje na datagridzie od zera
-                dg1Handler = new DataGridHandler();  //każdy datagrid musi mieć swoją instancję DataGridHandlera
-                dataGridView1.Rows.Clear();
-                dataGridView1.Refresh();
-                populateDatagrid(ref dataGridView1);
-            }            
         }
 
         private void PomocToolStripMenuItem_Click(object sender, EventArgs e)
@@ -236,7 +216,7 @@ namespace DataBaseEditor
 
         private void sqlQueryTextBox_TextChangedEvent(object sender, EventArgs e)
         {
-            if (sqlQueryTextBox.Text !="" && serverConnection !="")
+            if (sqlQueryTextBox.Text != "") // && dbConnection != null)
             {
                 displayButton.Enabled = true;
             }
