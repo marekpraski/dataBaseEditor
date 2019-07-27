@@ -86,10 +86,12 @@ namespace DataBaseEditor
         //przyjmuje liczbę nagłówków z kwerendy oraz datagrid, w którym trzeba dopasować liczbę kolumn
         private void changeMainFormLayout(int numberOfHeaders, ref DataGridView dataGrid)
         {
-            formatter.changeNumberOfColumnsInDatagrid(ref dataGrid, numberOfHeaders);
+            List<int> colWidths = queryData.getColumnWidths(dataGrid.Font,30);         //szerokości kolummn datagridu z danych z kwerendy
+            formatter.formatDatagrid(ref dataGrid, numberOfHeaders, colWidths);
             formatter.changeDisplayButtonLocation(ref displayButton);
             formatter.changeSaveButtonLocation(ref saveButton);
             formatter.changeUndoButtonLocation(ref undoButton);
+            formatter.setTextboxSize(ref sqlQueryTextBox);
             this.Width = formatter.calculateFormWidth();
         }
 
@@ -116,8 +118,12 @@ namespace DataBaseEditor
             string columnName = queryData.getHeaders()[columnIndex];
             string primaryKeyColumnName = queryData.getHeaders()[0];    //kluczem głównym MUSI być pierwsza kolumna
             object primaryKey = dg1Handler.getCellPrimaryKey(cell);
-            string updateQuery = "update " + dbName + " set " + columnName + "=" + cellConverter.getConvertedValue(ref cell) + " where " + primaryKeyColumnName + "='" + primaryKey.ToString() + "'";
-            return updateQuery;
+            string newValue = cellConverter.getConvertedValue(ref cell);
+            if (newValue == null)
+            {
+                return "update " + dbName + " set " + columnName + "= null" + " where " + primaryKeyColumnName + "='" + primaryKey.ToString() + "'";
+            }
+            return "update " + dbName + " set " + columnName + "=" + cellConverter.getConvertedValue(ref cell) + " where " + primaryKeyColumnName + "='" + primaryKey.ToString() + "'"; ;
         }
 
         private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)

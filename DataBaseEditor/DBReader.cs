@@ -15,11 +15,11 @@ namespace DataBaseEditor
         public DBReader(SqlConnection dbConnection)
         {
             this.dbConnection = dbConnection;
-            queryData = new QueryData();
         }
 
         public QueryData readFromDB(string sqlQuery)
         {
+            queryData = new QueryData();
             try
             {
                 SqlCommand sqlCommand = new SqlCommand(sqlQuery, dbConnection);
@@ -54,6 +54,6 @@ namespace DataBaseEditor
 
             dbConnection.Close();
             return queryData;
-        }
+        }       
     }
 }

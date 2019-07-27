@@ -11,32 +11,83 @@ namespace DataBaseEditor
     //zmienia układ przekazanego formularza, raczej nie jest uniwersalna tylko chodziło mi o oddzielenie tej funkcjonalności
     public class FormFormatter
     {
-        int originalButtonXLocation = 464;       //położenie buttonów przy 4 kolumnach
-        int originalDatagridWidth = 444;        //szerokość datagridu mającego 4 kolumny to 444
-        int dataGridPadding = 44;               //szerokość datagridu mającego 0 kolumn
-        int originalFormWidth = 565;            //szerokość formularza dla datagridu mającego 4 kolumny
-        int displayButtonYLocation = 123;
-        int undoButtonYLocation = 169;
-        int saveButtonYLocation = 219;
-        int defaultNrOfDatagridColumns = 4;
+        private int originalButtonXLocation = 464;       //położenie buttonów przy 4 kolumnach
+        private int originalDatagridWidth = 444;        //szerokość datagridu mającego 4 kolumny to 444
+        private int dataGridPadding = 65;               //szerokość datagridu mającego 0 kolumn
+        private int originalFormWidth = 565;            //szerokość formularza dla datagridu mającego 4 kolumny
+        private int displayButtonYLocation = 147;
+        private int undoButtonYLocation = 193;
+        private int saveButtonYLocation = 243;
+        private int defaultNrOfDatagridColumns = 4;
 
+        //szerokości kolumn datagridu
+        private int dafaultColWidth = 100;
+        private int minColumnWidth = 50;                 //szerokości kolumn są dopasowane do zawartości, ale jest min i max
+        private int maxColumnWidth = 300;
+        private int maxDatagridWidth = 1500;
+
+        //zmienne użyte do obliczenia położenia buttonów i szerokości całej formatki
         private List<DataGridViewColumn> columnsAdded;
-        private int dataGridWidth;
+        private int dataGridWidth=0;
+
+        private int minTextboxHeigth = 66;
+        private int minTextboxWidth = 527;
         public FormFormatter ()
         {
             columnsAdded = new List<DataGridViewColumn>();
         }
 
-        public void changeNumberOfColumnsInDatagrid(ref DataGridView dataGrid, int numberOfHeaders)
+        public void formatDatagrid(ref DataGridView dataGrid, int numberOfHeaders, List<int> colWidths)
         {
             resetDatagrid(ref dataGrid);
 
             //datagrid ma przynajmniej tyle kolumn ile określa zmienna defaultNrOfDatagridColumns, więc po resecie datagridu kolumny mogę tylko dodać, jeżeli nagłówków jest więcej niż ta liczba
+            addNewColumns(dataGrid, numberOfHeaders);
+            resizeColumns(dataGrid, colWidths);
+                
+            //określam i ograniczam szerokość datagridu            
+            foreach(int width in colWidths)
+            {
+                dataGridWidth += width;
+            }
+            dataGridWidth += dataGridPadding;
+            if (dataGridWidth > maxDatagridWidth)     //ograniczam max szerokość tworzonego datagrida do szerokości potrzebnej dla 10 kolumn
+            {
+                dataGrid.Width = maxDatagridWidth;     //celowa redundancja, bo używam zmiennej dataGridWidth do ustawienia położenia buttonów i szerokości głównej formatki
+            }
+            else
+            {
+                dataGrid.Width = dataGridWidth;
+            }
+        }
+
+        private void resizeColumns(DataGridView dataGrid, List<int> colWidths)
+        {
+            for(int i = 0; i<dataGrid.Columns.Count; i++)
+            {
+                int calculatedColWidth = colWidths[i];
+                if (calculatedColWidth < minColumnWidth)
+                {
+                    dataGrid.Columns[i].Width = minColumnWidth;
+                }
+                else if (calculatedColWidth>maxColumnWidth)
+                {
+                    dataGrid.Columns[i].Width = maxColumnWidth;
+                }
+                else
+                {
+                    dataGrid.Columns[i].Width = colWidths[i];
+                }
+            }
+        }
+
+        private void addNewColumns(DataGridView dataGrid, int numberOfHeaders)
+        {
             if (numberOfHeaders > defaultNrOfDatagridColumns)
             {
                 int numberOfAddedColumn = 0;      //zmienna użyta do nazywania kolejnych dodawanych kolumn
                 for (int i = 0; i < numberOfHeaders - defaultNrOfDatagridColumns; i++)
-                {                    
+                {
                     DataGridViewColumn col = new DataGridViewTextBoxColumn();
                     dataGrid.Columns.Add(col);
                     col.HeaderText = "added";
@@ -44,21 +95,6 @@ namespace DataBaseEditor
                     columnsAdded.Add(col);
                     numberOfAddedColumn++;
                 }
-                if (dataGridPadding + numberOfHeaders * 100 > 1046)     //ograniczam max szerokość tworzonego datagrida do szerokości potrzebnej dla 10 kolumn
-                {
-                    dataGridWidth = 1046;
-                    dataGrid.Width = dataGridWidth;     //celowa redundancja, bo używam zmiennej dataGridWidth do ustawienia położenia buttonów i szerokości głównej formatki
-                }
-                else
-                {
-                    dataGridWidth = dataGridPadding + numberOfHeaders * 100;   //standardowa szerokość kolumny to 100
-                    dataGrid.Width = dataGridWidth;
-                }
-            }
-            else
-            {
-                dataGridWidth = originalDatagridWidth;
-                dataGrid.Width = dataGridWidth;
             }
         }
 
@@ -67,7 +103,7 @@ namespace DataBaseEditor
         {
             if (columnsAdded.Count>0)   //w czasie tej sesji dodane zostały columny
             {
-                dataGrid.Width = originalDatagridWidth;
+                dataGridWidth = 0;
                 foreach (DataGridViewColumn col in columnsAdded)
                 {
                     dataGrid.Columns.Remove(col);
@@ -78,6 +114,7 @@ namespace DataBaseEditor
             for(int colNr = 0; colNr<defaultNrOfDatagridColumns; colNr++)
             {
                 dataGrid.Columns[colNr].HeaderText = "Column " + colNr;
+                dataGrid.Columns[colNr].Width = dafaultColWidth;
             }
         }
 
@@ -102,6 +139,11 @@ namespace DataBaseEditor
         public int calculateFormWidth()
         {
             return dataGridWidth + (originalFormWidth - originalDatagridWidth);
+        }
+
+        public void setTextboxSize(ref RichTextBox textbox)
+        {
+            textbox.Width = dataGridWidth;
         }
 
     }
