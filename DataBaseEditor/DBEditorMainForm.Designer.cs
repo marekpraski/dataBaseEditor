@@ -48,7 +48,7 @@
             // displayButton
             // 
             this.displayButton.Enabled = false;
-            this.displayButton.Location = new System.Drawing.Point(464, 123);
+            this.displayButton.Location = new System.Drawing.Point(464, 147);
             this.displayButton.Name = "displayButton";
             this.displayButton.Size = new System.Drawing.Size(75, 23);
             this.displayButton.TabIndex = 0;
@@ -59,7 +59,7 @@
             // undoButton
             // 
             this.undoButton.Enabled = false;
-            this.undoButton.Location = new System.Drawing.Point(464, 169);
+            this.undoButton.Location = new System.Drawing.Point(464, 193);
             this.undoButton.Name = "undoButton";
             this.undoButton.Size = new System.Drawing.Size(75, 23);
             this.undoButton.TabIndex = 1;
@@ -70,7 +70,7 @@
             // saveButton
             // 
             this.saveButton.Enabled = false;
-            this.saveButton.Location = new System.Drawing.Point(464, 219);
+            this.saveButton.Location = new System.Drawing.Point(464, 243);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(75, 23);
             this.saveButton.TabIndex = 2;
@@ -87,9 +87,9 @@
             this.Column2,
             this.Column3,
             this.Column4});
-            this.dataGridView1.Location = new System.Drawing.Point(12, 123);
+            this.dataGridView1.Location = new System.Drawing.Point(12, 147);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(444, 394);
+            this.dataGridView1.Size = new System.Drawing.Size(444, 483);
             this.dataGridView1.TabIndex = 3;
             this.dataGridView1.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.dataGridView1_CellBeginEdit);
             this.dataGridView1.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellEndEdit);
@@ -118,7 +118,7 @@
             // 
             this.sqlQueryTextBox.Location = new System.Drawing.Point(12, 51);
             this.sqlQueryTextBox.Name = "sqlQueryTextBox";
-            this.sqlQueryTextBox.Size = new System.Drawing.Size(527, 66);
+            this.sqlQueryTextBox.Size = new System.Drawing.Size(527, 90);
             this.sqlQueryTextBox.TabIndex = 4;
             this.sqlQueryTextBox.Text = "";
             this.sqlQueryTextBox.TextChanged += new System.EventHandler(this.sqlQueryTextBox_TextChangedEvent);
@@ -164,7 +164,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(549, 529);
+            this.ClientSize = new System.Drawing.Size(549, 642);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.sqlQueryTextBox);

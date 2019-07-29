@@ -88,21 +88,31 @@ namespace DataBaseEditor
             return false;
         }
 
-        //skoro wartość przeszła pierwsze sprawdzenie funkcją verifyCellDataType to ta funkcja musi rozważyć tylko dwa przypadki:
+        //skoro wartość przeszła pierwsze sprawdzenie funkcją verifyCellDataType to ta funkcja musi rozważyć tylko trzy przypadki:
+        //czy zwrócona wartość nie jest nullowa (użytkownik skasował zawartość celki)
         //zwrócić string w apostrofach i zamienić przecinek na kropkę w double
         public string getConvertedValue(ref DataGridCell cell)
         {
-            string typeName = cell.DataTypeName;
-            string convertedValue = cell.getCellValue(cellValueTypes.newValue).ToString();
-            if (typeName.Contains("float") || typeName.Contains("decimal") || typeName.Contains("numeric"))
+            if (!verifyCellNull(cell))
             {
-                return convertedValue.Replace(",", ".");    
-            }
-            else if (typeName.Contains("char"))
-            {
-                return "'" + convertedValue + "'";
-            }
+                string typeName = cell.DataTypeName;
+                string convertedValue = cell.getCellValue(cellValueTypes.newValue).ToString();
+                if (typeName.Contains("float") || typeName.Contains("decimal") || typeName.Contains("numeric"))
+                {
+                    return convertedValue.Replace(",", ".");
+                }
+                else if (typeName.Contains("char"))
+                {
+                    return "'" + convertedValue + "'";
+                }
                 return convertedValue;
+            }
+            return null;
+        }
+
+        private bool verifyCellNull(DataGridCell cell)
+        {
+            return cell.getCellValue(cellValueTypes.newValue) == null;
         }
     }
 }
