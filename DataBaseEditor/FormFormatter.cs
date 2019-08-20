@@ -13,7 +13,6 @@ namespace DataBaseEditor
     {
         private int originalButtonXLocation = 464;       //położenie buttonów przy 4 kolumnach
         private int originalDatagridWidth = 444;        //szerokość datagridu mającego 4 kolumny to 444
-        private int dataGridPadding = 65;               //szerokość datagridu mającego 0 kolumn
         private int originalFormWidth = 565;            //szerokość formularza dla datagridu mającego 4 kolumny
         private int displayButtonYLocation = 147;
         private int undoButtonYLocation = 193;
@@ -46,14 +45,12 @@ namespace DataBaseEditor
             resizeColumns(dataGrid, colWidths);
                 
             //określam i ograniczam szerokość datagridu            
-            foreach(int width in colWidths)
+            dataGridWidth = dataGrid.Columns.GetColumnsWidth(DataGridViewElementStates.None) + dataGrid.RowHeadersWidth + dataGrid.Margin.Left + dataGrid.Margin.Right; 
+            
+            if (dataGridWidth > maxDatagridWidth)     //ograniczam max szerokość tworzonego datagrida 
             {
-                dataGridWidth += width;
-            }
-            dataGridWidth += dataGridPadding;
-            if (dataGridWidth > maxDatagridWidth)     //ograniczam max szerokość tworzonego datagrida do szerokości potrzebnej dla 10 kolumn
-            {
-                dataGrid.Width = maxDatagridWidth;     //celowa redundancja, bo używam zmiennej dataGridWidth do ustawienia położenia buttonów i szerokości głównej formatki
+                dataGridWidth = maxDatagridWidth;
+                dataGrid.Width = dataGridWidth;      //celowa redundancja, bo używam zmiennej dataGridWidth do ustawienia położenia buttonów i szerokości głównej formatki
             }
             else
             {

@@ -13,7 +13,7 @@ namespace DataBaseEditor
     {       
         public bool verifyCellDataType(ref DataGridCell cell)
         {
-            // rozważam bazodanowe typy danych:  bit, int, bigint, (char, varchar), w grupach: (float, decimal, numeric), (datetime), (geometry)
+            // rozważam bazodanowe typy danych:  bit, int, bigint, oraz  w grupach: (char, varchar), (float, decimal, numeric), (datetime), (geometry)
             string typeName = cell.DataTypeName;
             object cellValue = cell.getCellValue(cellValueTypes.newValue);
             if (cellValue != null)
@@ -113,10 +113,10 @@ namespace DataBaseEditor
         {
             try
             {
-                DateTime value = (DateTime)cellValue;
+                DateTime value = DateTime.Parse(cellValue.ToString());
                 return true;
             }
-            catch (InvalidCastException e)
+            catch (FormatException e)
             {
                 MyMessageBox.display(e.Message + "\r\nNależy wprowadzić datę", MessageBoxType.Error);
             }
@@ -135,7 +135,7 @@ namespace DataBaseEditor
             {
                 MyMessageBox.display(e.Message + "\r\nNależy wprowadzić liczbę", MessageBoxType.Error);
             }
-            catch (System.FormatException ex)
+            catch (FormatException ex)
             {
                 MyMessageBox.display(ex.Message + "\r\nZnak separatora dziesiętnego musi być taki jaki jest ustawiony w systemie");
             }
@@ -150,12 +150,12 @@ namespace DataBaseEditor
             if (!verifyCellNull(cell))
             {
                 string typeName = cell.DataTypeName;
-                string convertedValue = cell.getCellValue(cellValueTypes.newValue).ToString();
+                string convertedValue = cell.getCellValue(cellValueTypes.newValue).ToString();      //zamieniam każdą wartość na string żeby móc łatwo złożyć kwerendę
                 if (typeName.Contains("float") || typeName.Contains("decimal") || typeName.Contains("numeric"))
                 {
                     return convertedValue.Replace(",", ".");
                 }
-                else if (typeName.Contains("char"))
+                else if (typeName.Contains("char") || typeName.Contains("datetime"))
                 {
                     return "'" + convertedValue + "'";
                 }
