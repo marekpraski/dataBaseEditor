@@ -101,9 +101,9 @@ namespace DataBaseEditor
         //wraca  datagrid do jego pierwotnych rozmiarów, tj do tylu kolumn ile określa zmienna defaultNrOfDatagridColumns
         private void resetDatagrid(ref DataGridView dataGrid)
         {
+            dataGridWidth = 0;
             if (columnsAdded.Count>0)   //w czasie tej sesji dodane zostały columny
-            {
-                dataGridWidth = 0;
+            {                
                 foreach (DataGridViewColumn col in columnsAdded)
                 {
                     dataGrid.Columns.Remove(col);
