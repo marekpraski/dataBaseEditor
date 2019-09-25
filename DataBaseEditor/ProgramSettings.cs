@@ -14,8 +14,10 @@ namespace DataBaseEditor
         public static string configFileName = "dbEditorConf.xml";
         public static string connectionStringDelimiter = "server";
         public static string databaseNameDelimiter = "db_name";
-        public static string configFilePath = "";
+        public static string configFilePath = @"";
         public static string userName = "";
         public static string userPassword = "";
+
+        public static int numberOfRowsToLoad = 50;     //ile wierszy ładuje się do datagrida w jednej operacji
     }
 }

@@ -78,6 +78,7 @@ namespace DataBaseEditor
             return primaryKey;
         }
 
+
         #region IDisposable Support
         private bool disposedValue = false; // Aby wykryć nadmiarowe wywołania
 

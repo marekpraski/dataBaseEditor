@@ -41,6 +41,8 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.pomocToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label2 = new System.Windows.Forms.Label();
+            this.loadNextButton = new System.Windows.Forms.Button();
+            this.remainingRowsLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -138,7 +140,7 @@
             this.pomocToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(549, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(558, 24);
             this.menuStrip1.TabIndex = 6;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -160,11 +162,34 @@
             this.label2.Text = "połączenie z serwerem nie zostało zdefiniowane";
             this.label2.Visible = false;
             // 
+            // loadNextButton
+            // 
+            this.loadNextButton.Location = new System.Drawing.Point(463, 606);
+            this.loadNextButton.Name = "loadNextButton";
+            this.loadNextButton.Size = new System.Drawing.Size(83, 23);
+            this.loadNextButton.TabIndex = 8;
+            this.loadNextButton.Text = "button1";
+            this.loadNextButton.UseVisualStyleBackColor = true;
+            this.loadNextButton.Visible = false;
+            this.loadNextButton.Click += new System.EventHandler(this.LoadNexButton_Click);
+            // 
+            // remainingRecordsLabel
+            // 
+            this.remainingRowsLabel.AutoSize = true;
+            this.remainingRowsLabel.Location = new System.Drawing.Point(483, 590);
+            this.remainingRowsLabel.Name = "remainingRecordsLabel";
+            this.remainingRowsLabel.Size = new System.Drawing.Size(35, 13);
+            this.remainingRowsLabel.TabIndex = 9;
+            this.remainingRowsLabel.Text = "label3";
+            this.remainingRowsLabel.Visible = false;
+            // 
             // DBEditorMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(549, 642);
+            this.ClientSize = new System.Drawing.Size(558, 642);
+            this.Controls.Add(this.remainingRowsLabel);
+            this.Controls.Add(this.loadNextButton);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.sqlQueryTextBox);
@@ -199,6 +224,8 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem pomocToolStripMenuItem;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button loadNextButton;
+        private System.Windows.Forms.Label remainingRowsLabel;
     }
 }
 

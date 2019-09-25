@@ -17,13 +17,18 @@ namespace DataBaseEditor
         private int displayButtonYLocation = 147;
         private int undoButtonYLocation = 193;
         private int saveButtonYLocation = 243;
+        private int loadNextButtonYLocation = 606;
         private int defaultNrOfDatagridColumns = 4;
+
+        private int originalRemainingRowsLabelXLocation = 483;
+        private int remainingRowsLabelYLocation = 590;
 
         //szerokości kolumn datagridu
         private int dafaultColWidth = 100;
         private int minColumnWidth = 50;                 //szerokości kolumn są dopasowane do zawartości, ale jest min i max
         private int maxColumnWidth = 300;
         private int maxDatagridWidth = 1500;
+        private int dataGridColumnPadding = 15;          //wartość dobrana doświadczalnie, dodaję do szerokości datagridu obliczonej standardowo, inaczej pojawia się pasek przewijania na dole
 
         //zmienne użyte do obliczenia położenia buttonów i szerokości całej formatki
         private List<DataGridViewColumn> columnsAdded;
@@ -45,7 +50,7 @@ namespace DataBaseEditor
             resizeColumns(dataGrid, colWidths);
                 
             //określam i ograniczam szerokość datagridu            
-            dataGridWidth = dataGrid.Columns.GetColumnsWidth(DataGridViewElementStates.None) + dataGrid.RowHeadersWidth + dataGrid.Margin.Left + dataGrid.Margin.Right; 
+            dataGridWidth = dataGrid.Columns.GetColumnsWidth(DataGridViewElementStates.None) + dataGrid.RowHeadersWidth + dataGrid.Margin.Left + dataGrid.Margin.Right + dataGridColumnPadding; 
             
             if (dataGridWidth > maxDatagridWidth)     //ograniczam max szerokość tworzonego datagrida 
             {
@@ -60,14 +65,14 @@ namespace DataBaseEditor
 
         private void resizeColumns(DataGridView dataGrid, List<int> colWidths)
         {
-            for(int i = 0; i<dataGrid.Columns.Count; i++)
+            for (int i = 0; i < colWidths.Count; i++)
             {
                 int calculatedColWidth = colWidths[i];
                 if (calculatedColWidth < minColumnWidth)
                 {
                     dataGrid.Columns[i].Width = minColumnWidth;
                 }
-                else if (calculatedColWidth>maxColumnWidth)
+                else if (calculatedColWidth > maxColumnWidth)
                 {
                     dataGrid.Columns[i].Width = maxColumnWidth;
                 }
@@ -119,6 +124,18 @@ namespace DataBaseEditor
         {
             Point newUndoButtonLocation = new Point(dataGridWidth + (originalButtonXLocation - originalDatagridWidth), undoButtonYLocation);
             button.Location = newUndoButtonLocation;
+        }
+
+        public void changeLoadNextButtonLocation(Button button)
+        {
+            Point newULoadNexButtonLocation = new Point(dataGridWidth + (originalButtonXLocation - originalDatagridWidth),loadNextButtonYLocation);
+            button.Location = newULoadNexButtonLocation;
+        }
+
+        public void changeRemainingRowsLabelLocation(Label label)
+        {
+            Point newremainingRowsLabelLocation = new Point(dataGridWidth + (originalButtonXLocation - originalDatagridWidth), remainingRowsLabelYLocation);
+            label.Location = newremainingRowsLabelLocation;
         }
 
         public void changeSaveButtonLocation(ref Button button)
