@@ -57,7 +57,7 @@ namespace DataBaseEditor
             return false;
         }
 
-        public string getTableName(ref string sqlQuery)
+        public string getTableName(string sqlQuery)
         {
             this.sqlQuery = sqlQuery;
             TextManipulator tm = new TextManipulator();

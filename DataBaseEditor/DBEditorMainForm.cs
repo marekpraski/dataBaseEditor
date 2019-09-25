@@ -50,8 +50,10 @@ namespace DataBaseEditor
 
             if (configFileValidated)
             {
-                sqlQuery = sqlQueryTextBox.Text.ToLower();      //sql nie widzi różnicy pomiędzy lower i upper case a ma to znaczenie przy wyszukiwaniu słow kluczowych w kwerendzie
-                dbName = connector.getTableName(ref sqlQuery);
+                sqlQuery = sqlQueryTextBox.Text;      
+                
+                //sql nie widzi różnicy pomiędzy lower i upper case a ma to znaczenie przy wyszukiwaniu słow kluczowych w kwerendzie
+                dbName = connector.getTableName(sqlQueryTextBox.Text.ToLower());
                 dbConnection = connector.getDBConnection(ConnectionSources.serverNameInFile, ConnectionTypes.sqlAuthorisation);
 
                 if (dg1Handler.checkChangesExist())
