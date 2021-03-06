@@ -1,0 +1,11 @@
+
+/TestResults/
+/packages/
+
+/DataBaseEditor/bin/
+/DataBaseEditor/obj/
+
+/DataBaseEditorTests/bin/
+/DataBaseEditorTests/obj/
+
+.vs/
