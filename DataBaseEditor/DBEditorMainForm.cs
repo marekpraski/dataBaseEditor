@@ -20,7 +20,7 @@ namespace DataBaseEditor
         private string sqlQuery;
         private QueryData queryData;
         private SqlConnection dbConnection;
-        private string dbName = "";
+        private string tableName = "";
 
         private List<object[]> dbData;
 
@@ -53,7 +53,7 @@ namespace DataBaseEditor
                 sqlQuery = sqlQueryTextBox.Text;      
                 
                 //sql nie widzi różnicy pomiędzy lower i upper case a ma to znaczenie przy wyszukiwaniu słow kluczowych w kwerendzie
-                dbName = connector.getTableName(sqlQuery.ToLower());
+                tableName = connector.getTableName(sqlQuery);
                 dbConnection = connector.getDBConnection(ConnectionSources.serverNameInFile, ConnectionTypes.sqlAuthorisation);
 
                 if (dg1Handler.checkChangesExist())
@@ -104,7 +104,7 @@ namespace DataBaseEditor
             while (dg1Handler.checkChangesExist())
             {
                 DataGridCell cell = dg1Handler.getLastCellChangedAndUndoChanges();
-                query = generateUpdateQuery(dbName, cell);
+                query = generateUpdateQuery(tableName, cell);
                 writer.writeToDB(query);
                 changeCellTextColour(cell, Color.Black);
             }

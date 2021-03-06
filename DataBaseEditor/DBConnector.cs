@@ -19,11 +19,11 @@ namespace DataBaseEditor
     {
         private SqlConnection dbConnection;
         private string sqlQuery;
+        private string originalSqlQuery;
         private string configFilePath;
         private string configFileText;
         private string dbConnectionString;
         private string serverName;
-        private string tableName;
         private string dbName;
         private string userName = ProgramSettings.userName;
         private string userPassword = ProgramSettings.userPassword;
@@ -59,15 +59,16 @@ namespace DataBaseEditor
 
         public string getTableName(string sqlQuery)
         {
-            this.sqlQuery = sqlQuery;
-            TextManipulator tm = new TextManipulator();
-            extractTableName(ref tm);
-            return tableName;
+            this.sqlQuery = sqlQuery.ToLower();     //zamieniam na małe litery bo to ma znaczenie podczas wyszukiwania
+            this.originalSqlQuery = sqlQuery;            
+            return extractTableName();
         }
 
         //wyciąga nazwę db z kwerendy wpisanej przez użytkownika
-        private void extractTableName(ref TextManipulator tm)
+        private string extractTableName()
         {
+            string tableName = "";
+            TextManipulator tm = new TextManipulator();
             //znajduję położenie wyrazu kluczowego "from" w kwerendzie
             List<int> keyWordFromPosition = tm.getSubstringStartPositions(sqlQuery, "from");
             try
@@ -89,6 +90,18 @@ namespace DataBaseEditor
                 MyMessageBox.display("Błąd w kwerendzie", MessageBoxType.Error);
                 tableName = "";
             }
+            return restoreCase(tableName);  //powracam do oryginalnej pisowni, bo ma to znaczenie gdy collation bazy jest ustawiony na case-sensitive
+        }
+
+        private string restoreCase(string tableName)
+        {
+            string[] s = this.originalSqlQuery.Split(' ');
+            for(int i = 0; i < s.Length; i++)
+            {
+                if (s[i].ToLower().Equals(tableName))
+                    return s[i];
+            }
+            return "";
         }
 
         public ref SqlConnection getDBConnection (ConnectionSources source, ConnectionTypes type)
