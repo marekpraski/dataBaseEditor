@@ -4,9 +4,13 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Threading.Tasks;
+using DatabaseInterface;
 using System.Windows.Forms;
 using System.Data.SqlClient;
+using MapInterface;
+using System.Diagnostics;
+using MapInterfaceObjects;
+using InterProcessCommunication;
 
 namespace DataBaseEditor
 {
@@ -27,11 +31,14 @@ namespace DataBaseEditor
         private int datagridRowIndex = 0;
         private int rowsLoaded = 0;
 
+        private IPCReceiver ipcReceiver;
+        private IPCSender ipcSender;
+
         public DBEditorMainForm()
         {
             InitializeComponent();
-            connector = new DBConnector();
-            configFileValidated = connector.validateConfigFile();
+            connector = new DBConnector(ProgramSettings.userName, ProgramSettings.userPassword);
+            configFileValidated = connector.validateConfigFile(Application.StartupPath);
             label2.Visible = !configFileValidated;
             dg1Handler = new DataGridHandler();  //każdy datagrid musi mieć swoją instancję DataGridHandlera
             formatter = new FormFormatter();
@@ -53,8 +60,8 @@ namespace DataBaseEditor
                 sqlQuery = sqlQueryTextBox.Text;      
                 
                 //sql nie widzi różnicy pomiędzy lower i upper case a ma to znaczenie przy wyszukiwaniu słow kluczowych w kwerendzie
-                tableName = connector.getTableName(sqlQuery);
-                dbConnection = connector.getDBConnection(ConnectionSources.serverNameInFile, ConnectionTypes.sqlAuthorisation);
+                tableName = connector.getTableNameFromQuery(sqlQuery);
+                dbConnection = connector.getDBConnection(ConnectionDataSource.serverAndDatabaseNamesInFile, ConnectionTypes.sqlAuthorisation);
 
                 if (dg1Handler.checkChangesExist())
                 {
@@ -105,7 +112,7 @@ namespace DataBaseEditor
             {
                 DataGridCell cell = dg1Handler.getLastCellChangedAndUndoChanges();
                 query = generateUpdateQuery(tableName, cell);
-                writer.writeToDB(query);
+                writer.executeQuery(query);
                 changeCellTextColour(cell, Color.Black);
             }
             //blokuję przyciski zapisu i cofania, bo po zapisaniu zmian już nie ma czego zapisać ani cofnąć
@@ -317,5 +324,132 @@ namespace DataBaseEditor
             int columnIndex = cell.getCellIndex(cellIndexTypes.columnIndex);
             dataGridView1.Rows[rowIndex].Cells[columnIndex].Style.ForeColor = colour;
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (dataGridView1.SelectedRows.Count > 0)
+            {
+                updateWyrobiskaLinieCentralne(dataGridView1.SelectedRows[0].Index);
+                dataGridView1.SelectedRows[0].Visible = false;
+            }
+        }
+
+        private void updateWyrobiskaLinieCentralne(int index)
+        {
+            int idWyrobiska = Convert.ToInt32(dataGridView1.Rows[index].Cells[0].Value);
+            string insertQuery = "insert into WyrobiskaLinieCentralne values(" + idWyrobiska + ",null)";
+            DBWriter writer = new DBWriter(dbConnection);
+            writer.executeQuery(insertQuery);
+        }
+
+        #region start add-ina, obsługa komunikacji z modułem add-in, w tym metody wykonujące konkretne zadania na konkretne żądania ze stronu add-in
+        /**
+         * przebieg procesu uruchamiania add-ina i ustanawiania połączenia przez TCP z programem głównym:
+         * 1. program główny za pośrednictwem MapTools wywołuje key-in "mdl load BentleyAddin,,BIDomain " + port1 + " " + port2;
+         * 2. add-in wykorzystuje przesłane porty do ustanowienia serwera i klienta TCP, wysyła do programu głównego żądanie przesłania danych logowania do bazy danych
+         * 3. dopiero po otrzymaniu żądania program główny uruchamia klienta TCP a następnie przesyła dane logowania
+         * 4. add-in ustanawia połączenie do bazy i wysyła do programu głównego potwierdzenie, że jest w pełni funkcjonalny
+         * 5. program główny uruchamia pasek narzędziowy add-ina wywołując właściwy key-in
+         **/
+        private void mapaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.ipcReceiver = IPCReceiver.getInstance();
+            if (this.ipcReceiver.getDataReceivedEventInvocationList() == 0)
+            {    //inaczej zdarzenie dodane jest przy każdym kliknięciu
+                this.ipcReceiver.dataReceived += onDataReceived;
+            }
+            startAddin();
+        }
+
+        private void startAddin()
+        {
+            Process[] proc = Process.GetProcessesByName(Program.aplikacjaCAD);
+
+            if (proc.Length == 0)
+            {
+                MessageBox.Show("Należy włączyć Microstation");
+            }
+            else
+            {
+                MapTools mt = new MapTools();
+                if (!Program.isAddinConnected)
+                    mt.startAddin(Program.port1, Program.port2);
+                else
+                    startMaincoalTools(mt);
+            }
+        }
+
+        private void startMaincoalTools(MapTools mt)
+        {
+            string keyIn = @"ASSEMBLY MAINCOALTOOL";
+            mt.sendKeyin(keyIn);
+        }
+
+
+        private void onDataReceived(object sender, IPCEventArgs args)
+        {
+            SenderFunction senderFunction = args.senderFunc;
+            IPCCodec codec = new IPCCodec();
+            switch (senderFunction)
+            {
+                case SenderFunction.Handshake:
+                    handleHandshake();
+                    break;
+                case SenderFunction.InformacjaOObiekcie:
+                    handleObjectInfo(codec, args);
+                    break;
+                case SenderFunction.ObjectsFromMap:
+                    handleObjectsFromMap(codec, args);
+                    break;
+                case SenderFunction.ErrorsParceleBrakGrafiki:
+                    handleErrors(codec, args);
+                    break;
+            }
+        }
+
+        private void handleErrors(IPCCodec codec, IPCEventArgs args)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        private void handleHandshake()
+        {
+            this.ipcSender = IPCSender.getInstance();
+            DBConnectionData connectionData = new DBConnectionData()
+            {
+                serverName = ProgramSettings.Server,
+                dbName = ProgramSettings.Database,
+                login = ProgramSettings.userName,
+                password = ProgramSettings.userPassword,
+                applicationStartupPath = Program.mainPath
+            };
+            this.ipcSender.sendConnectionData(connectionData);
+            Program.isAddinConnected = true;
+        }
+
+        private void handleObjectInfo(IPCCodec codec, IPCEventArgs args)
+        {
+            IEnumerable<ISerializable> data = codec.getSerializables(args.data);
+            if (data.Count() == 0)
+            {
+                MessageBox.Show("Brak danych do wyświetlenia");
+                return;
+            }
+            //displayInfo(data);
+        }
+
+        private void handleObjectsFromMap(IPCCodec codec, IPCEventArgs args)
+        {
+            IEnumerable<IElementGraficzny> data = codec.getElementyGraficzne(args.data);
+            if (data.Count() == 0)
+            {
+                MessageBox.Show("Brak danych");
+                return;
+            }
+        }
+
+        #endregion
+
     }
 }

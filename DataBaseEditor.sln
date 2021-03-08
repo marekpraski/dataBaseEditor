@@ -7,6 +7,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataBaseEditor", "DataBaseE
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataBaseEditorTests", "DataBaseEditorTests\DataBaseEditorTests.csproj", "{E7E5C808-B8B0-47F8-A6F2-A8C52AB6CB8D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapInterface", "..\MapInterface\MapInterface\MapInterface.csproj", "{6720BE48-852B-4E2E-ADF2-057928FCE566}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapInterfaceObjects", "..\MapInterfaceObjects\MapInterfaceObjects\MapInterfaceObjects.csproj", "{1CEF8546-67D6-4D5B-85B2-6B76D868B11B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BentleyAddin", "..\BentleyAddin\BentleyAddin\BentleyAddin.csproj", "{DAEF5E3C-0FFD-4253-9432-17FDADCA1E7C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BentleyInterface", "..\BentleyInterface\BentleyInterface\BentleyInterface.csproj", "{69F942F3-CC53-40C7-858C-6E3F68301CB8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseInterface", "..\DatabaseInterface\DatabaseInterface\DatabaseInterface.csproj", "{CAE4B502-3AA3-4F98-A140-9D6438FB070A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +31,26 @@ Global
 		{E7E5C808-B8B0-47F8-A6F2-A8C52AB6CB8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7E5C808-B8B0-47F8-A6F2-A8C52AB6CB8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7E5C808-B8B0-47F8-A6F2-A8C52AB6CB8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6720BE48-852B-4E2E-ADF2-057928FCE566}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6720BE48-852B-4E2E-ADF2-057928FCE566}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6720BE48-852B-4E2E-ADF2-057928FCE566}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6720BE48-852B-4E2E-ADF2-057928FCE566}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CEF8546-67D6-4D5B-85B2-6B76D868B11B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CEF8546-67D6-4D5B-85B2-6B76D868B11B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CEF8546-67D6-4D5B-85B2-6B76D868B11B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CEF8546-67D6-4D5B-85B2-6B76D868B11B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DAEF5E3C-0FFD-4253-9432-17FDADCA1E7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAEF5E3C-0FFD-4253-9432-17FDADCA1E7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAEF5E3C-0FFD-4253-9432-17FDADCA1E7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAEF5E3C-0FFD-4253-9432-17FDADCA1E7C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69F942F3-CC53-40C7-858C-6E3F68301CB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69F942F3-CC53-40C7-858C-6E3F68301CB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69F942F3-CC53-40C7-858C-6E3F68301CB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69F942F3-CC53-40C7-858C-6E3F68301CB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAE4B502-3AA3-4F98-A140-9D6438FB070A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAE4B502-3AA3-4F98-A140-9D6438FB070A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAE4B502-3AA3-4F98-A140-9D6438FB070A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAE4B502-3AA3-4F98-A140-9D6438FB070A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

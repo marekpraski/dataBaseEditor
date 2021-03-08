@@ -43,6 +43,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.loadNextButton = new System.Windows.Forms.Button();
             this.remainingRowsLabel = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
+            this.mapaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -90,6 +92,7 @@
             this.Column3,
             this.Column4});
             this.dataGridView1.Location = new System.Drawing.Point(12, 147);
+            this.dataGridView1.MultiSelect = false;
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.Size = new System.Drawing.Size(444, 483);
             this.dataGridView1.TabIndex = 3;
@@ -137,7 +140,8 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.pomocToolStripMenuItem});
+            this.pomocToolStripMenuItem,
+            this.mapaToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(558, 24);
@@ -148,7 +152,7 @@
             // 
             this.pomocToolStripMenuItem.Name = "pomocToolStripMenuItem";
             this.pomocToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
-            this.pomocToolStripMenuItem.Text = "pomoc";
+            this.pomocToolStripMenuItem.Text = "Pomoc";
             this.pomocToolStripMenuItem.Click += new System.EventHandler(this.PomocToolStripMenuItem_Click);
             // 
             // label2
@@ -173,21 +177,39 @@
             this.loadNextButton.Visible = false;
             this.loadNextButton.Click += new System.EventHandler(this.LoadNexButton_Click);
             // 
-            // remainingRecordsLabel
+            // remainingRowsLabel
             // 
             this.remainingRowsLabel.AutoSize = true;
             this.remainingRowsLabel.Location = new System.Drawing.Point(483, 590);
-            this.remainingRowsLabel.Name = "remainingRecordsLabel";
+            this.remainingRowsLabel.Name = "remainingRowsLabel";
             this.remainingRowsLabel.Size = new System.Drawing.Size(35, 13);
             this.remainingRowsLabel.TabIndex = 9;
             this.remainingRowsLabel.Text = "label3";
             this.remainingRowsLabel.Visible = false;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(471, 317);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 10;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // mapaToolStripMenuItem
+            // 
+            this.mapaToolStripMenuItem.Name = "mapaToolStripMenuItem";
+            this.mapaToolStripMenuItem.Size = new System.Drawing.Size(49, 20);
+            this.mapaToolStripMenuItem.Text = "Mapa";
+            this.mapaToolStripMenuItem.Click += new System.EventHandler(this.mapaToolStripMenuItem_Click);
             // 
             // DBEditorMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(558, 642);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.remainingRowsLabel);
             this.Controls.Add(this.loadNextButton);
             this.Controls.Add(this.label2);
@@ -226,6 +248,8 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button loadNextButton;
         private System.Windows.Forms.Label remainingRowsLabel;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.ToolStripMenuItem mapaToolStripMenuItem;
     }
 }
 

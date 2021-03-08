@@ -17,6 +17,8 @@ namespace DataBaseEditor
         public static string configFilePath = @"";
         public static string userName = "";
         public static string userPassword = "";
+        public static string Server = "";
+        public static string Database = "";
 
         public static int numberOfRowsToLoad = 50;     //ile wierszy ładuje się do datagrida w jednej operacji
     }

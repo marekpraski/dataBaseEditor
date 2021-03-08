@@ -51,9 +51,6 @@
     <Compile Include="CellConverter.cs" />
     <Compile Include="DataGridCell.cs" />
     <Compile Include="DataGridHandler.cs" />
-    <Compile Include="DBConnector.cs" />
-    <Compile Include="DBReader.cs" />
-    <Compile Include="DBWriter.cs" />
     <Compile Include="DBEditorMainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -62,6 +59,8 @@
     </Compile>
     <Compile Include="FileManipulator.cs" />
     <Compile Include="FormFormatter.cs" />
+    <Compile Include="IPCReceiver.cs" />
+    <Compile Include="IPCSender.cs" />
     <Compile Include="MyMessageBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -69,12 +68,14 @@
     <Compile Include="Program.cs" />
     <Compile Include="ProgramSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QueryData.cs" />
     <Compile Include="TextManipulator.cs" />
     <EmbeddedResource Include="DBEditorMainForm.resx">
       <DependentUpon>DBEditorMainForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MyMessageBox.resx" />
+    <EmbeddedResource Include="MyMessageBox.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MyMessageBox1.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -96,6 +97,28 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\BentleyAddin\BentleyAddin\BentleyAddin.csproj">
+      <Project>{daef5e3c-0ffd-4253-9432-17fdadca1e7c}</Project>
+      <Name>BentleyAddin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\BentleyInterface\BentleyInterface\BentleyInterface.csproj">
+      <Project>{69f942f3-cc53-40c7-858c-6e3f68301cb8}</Project>
+      <Name>BentleyInterface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DatabaseInterface\DatabaseInterface\DatabaseInterface.csproj">
+      <Project>{cae4b502-3aa3-4f98-a140-9d6438fb070a}</Project>
+      <Name>DatabaseInterface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MapInterfaceObjects\MapInterfaceObjects\MapInterfaceObjects.csproj">
+      <Project>{1cef8546-67d6-4d5b-85b2-6b76d868b11b}</Project>
+      <Name>MapInterfaceObjects</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MapInterface\MapInterface\MapInterface.csproj">
+      <Project>{6720be48-852b-4e2e-adf2-057928fce566}</Project>
+      <Name>MapInterface</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
