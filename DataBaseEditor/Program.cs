@@ -39,6 +39,8 @@ namespace DataBaseEditor
                 FileManipulator fm = new FileManipulator();
                 string t = fm.readFile(configFilePath);
                 XElement parameters = XElement.Parse(t);
+                ProgramSettings.Server = parameters.Element("server").Value;
+                ProgramSettings.Database = parameters.Element("db_name").Value;
                 port1 = Convert.ToInt32(parameters.Element("port1").Value);
                 port2 = Convert.ToInt32(parameters.Element("port2").Value);
                 aplikacjaCAD = getAppFromConfigFile(parameters.Element("aplikacjaCAD").Value);

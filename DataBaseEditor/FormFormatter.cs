@@ -27,7 +27,7 @@ namespace DataBaseEditor
         private int dafaultColWidth = 100;
         private int minColumnWidth = 50;                 //szerokości kolumn są dopasowane do zawartości, ale jest min i max
         private int maxColumnWidth = 300;
-        private int maxDatagridWidth = 1500;
+        private int maxDatagridWidth = 1300;
         private int dataGridColumnPadding = 15;          //wartość dobrana doświadczalnie, dodaję do szerokości datagridu obliczonej standardowo, inaczej pojawia się pasek przewijania na dole
 
         //zmienne użyte do obliczenia położenia buttonów i szerokości całej formatki

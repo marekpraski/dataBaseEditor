@@ -36,9 +36,9 @@ namespace DataBaseEditor
             return ipcHandler.sendConnectionData(bytes, IPCAppType.MAIN, SenderFunction.DBConnectionData);
         }
 
-        public bool sendMessage(string message)
+        public bool sendMessage(string message, SenderFunction senderFunction)
         {
-            return ipcHandler.sendMessage(message, IPCAppType.MAIN, SenderFunction.DisplayObjectsOnMap);
+            return ipcHandler.sendMessage(message, IPCAppType.MAIN, senderFunction);
         }
     }
 }

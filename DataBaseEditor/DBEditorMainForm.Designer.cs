@@ -40,11 +40,10 @@
             this.label1 = new System.Windows.Forms.Label();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.pomocToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mapaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label2 = new System.Windows.Forms.Label();
             this.loadNextButton = new System.Windows.Forms.Button();
             this.remainingRowsLabel = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.mapaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -98,6 +97,7 @@
             this.dataGridView1.TabIndex = 3;
             this.dataGridView1.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.dataGridView1_CellBeginEdit);
             this.dataGridView1.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellEndEdit);
+            this.dataGridView1.RowHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView1_RowHeaderMouseClick);
             // 
             // Column1
             // 
@@ -155,6 +155,13 @@
             this.pomocToolStripMenuItem.Text = "Pomoc";
             this.pomocToolStripMenuItem.Click += new System.EventHandler(this.PomocToolStripMenuItem_Click);
             // 
+            // mapaToolStripMenuItem
+            // 
+            this.mapaToolStripMenuItem.Name = "mapaToolStripMenuItem";
+            this.mapaToolStripMenuItem.Size = new System.Drawing.Size(49, 20);
+            this.mapaToolStripMenuItem.Text = "Mapa";
+            this.mapaToolStripMenuItem.Click += new System.EventHandler(this.mapaToolStripMenuItem_Click);
+            // 
             // label2
             // 
             this.label2.AutoSize = true;
@@ -187,29 +194,11 @@
             this.remainingRowsLabel.Text = "label3";
             this.remainingRowsLabel.Visible = false;
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(471, 317);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 10;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // mapaToolStripMenuItem
-            // 
-            this.mapaToolStripMenuItem.Name = "mapaToolStripMenuItem";
-            this.mapaToolStripMenuItem.Size = new System.Drawing.Size(49, 20);
-            this.mapaToolStripMenuItem.Text = "Mapa";
-            this.mapaToolStripMenuItem.Click += new System.EventHandler(this.mapaToolStripMenuItem_Click);
-            // 
             // DBEditorMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(558, 642);
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.remainingRowsLabel);
             this.Controls.Add(this.loadNextButton);
             this.Controls.Add(this.label2);
@@ -223,6 +212,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "DBEditorMainForm";
             this.Text = "Edytor Bazy Danych";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DBEditorMainForm_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -248,7 +238,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button loadNextButton;
         private System.Windows.Forms.Label remainingRowsLabel;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ToolStripMenuItem mapaToolStripMenuItem;
     }
 }

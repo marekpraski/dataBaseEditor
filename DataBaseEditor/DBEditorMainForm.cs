@@ -190,7 +190,7 @@ namespace DataBaseEditor
 
         #endregion
 
-
+        #region metody do edycji i zapisu danych w datagridzie
 
         private void setUpDatagrid()
         {
@@ -216,7 +216,8 @@ namespace DataBaseEditor
                 //nazywam nagłówki
                 for (int i = 0; i < queryData.getHeaders().Count; i++)
                 {
-                    dataGridView1.Columns[i].HeaderText = columnHeaders[i];  
+                    dataGridView1.Columns[i].HeaderText = columnHeaders[i];
+                    dataGridView1.Columns[i].Name = columnHeaders[i];
                 }
             }
             if (dbData != null)
@@ -240,8 +241,6 @@ namespace DataBaseEditor
                 }
             }
         }
-
-
 
         private void loadRowPacket()
         {
@@ -285,7 +284,6 @@ namespace DataBaseEditor
             }
         }
 
-
         //przyjmuje liczbę nagłówków z kwerendy oraz datagrid, w którym trzeba dopasować liczbę kolumn
         private void changeMainFormLayout(int numberOfHeaders, ref DataGridView dataGrid)
         {
@@ -317,30 +315,13 @@ namespace DataBaseEditor
         }
 
 
-
         private void changeCellTextColour(DataGridCell cell, Color colour)
         {
             int rowIndex = cell.getCellIndex(cellIndexTypes.rowIndex);
             int columnIndex = cell.getCellIndex(cellIndexTypes.columnIndex);
             dataGridView1.Rows[rowIndex].Cells[columnIndex].Style.ForeColor = colour;
         }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            if (dataGridView1.SelectedRows.Count > 0)
-            {
-                updateWyrobiskaLinieCentralne(dataGridView1.SelectedRows[0].Index);
-                dataGridView1.SelectedRows[0].Visible = false;
-            }
-        }
-
-        private void updateWyrobiskaLinieCentralne(int index)
-        {
-            int idWyrobiska = Convert.ToInt32(dataGridView1.Rows[index].Cells[0].Value);
-            string insertQuery = "insert into WyrobiskaLinieCentralne values(" + idWyrobiska + ",null)";
-            DBWriter writer = new DBWriter(dbConnection);
-            writer.executeQuery(insertQuery);
-        }
+        #endregion
 
         #region start add-ina, obsługa komunikacji z modułem add-in, w tym metody wykonujące konkretne zadania na konkretne żądania ze stronu add-in
         /**
@@ -379,10 +360,15 @@ namespace DataBaseEditor
             }
         }
 
-        private void startMaincoalTools(MapTools mt)
+        private void dataGridView1_RowHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            string keyIn = @"ASSEMBLY MAINCOALTOOL";
-            mt.sendKeyin(keyIn);
+            int selectedRow = dataGridView1.SelectedRows[0].Index;
+            int columnNazwaIndex = dataGridView1.Columns["nazwa"].Index;
+            int columnIDIndex = dataGridView1.Columns["id_wyrobiska"].Index;
+            string idWyrobiska = dataGridView1.Rows[selectedRow].Cells[columnIDIndex].Value.ToString();
+            string nazwaWyrobiska = dataGridView1.Rows[selectedRow].Cells[columnNazwaIndex].Value.ToString();
+            string info = idWyrobiska + ";" + nazwaWyrobiska;
+            this.ipcSender.sendMessage(info, SenderFunction.InformacjaOObiekcie);
         }
 
 
@@ -395,21 +381,13 @@ namespace DataBaseEditor
                 case SenderFunction.Handshake:
                     handleHandshake();
                     break;
-                case SenderFunction.InformacjaOObiekcie:
-                    handleObjectInfo(codec, args);
+                case SenderFunction.ConfirmationAddinOnline:
+                    startMaincoalTools(new MapTools());
                     break;
-                case SenderFunction.ObjectsFromMap:
-                    handleObjectsFromMap(codec, args);
-                    break;
-                case SenderFunction.ErrorsParceleBrakGrafiki:
-                    handleErrors(codec, args);
+                case SenderFunction.DataSaved:
+                    actionWhenDataSaved();
                     break;
             }
-        }
-
-        private void handleErrors(IPCCodec codec, IPCEventArgs args)
-        {
-            throw new NotImplementedException();
         }
 
 
@@ -428,28 +406,36 @@ namespace DataBaseEditor
             Program.isAddinConnected = true;
         }
 
-        private void handleObjectInfo(IPCCodec codec, IPCEventArgs args)
+
+        private void startMaincoalTools(MapTools mt)
         {
-            IEnumerable<ISerializable> data = codec.getSerializables(args.data);
-            if (data.Count() == 0)
-            {
-                MessageBox.Show("Brak danych do wyświetlenia");
-                return;
-            }
-            //displayInfo(data);
+            string keyIn = @"ASSEMBLY MAINCOALTOOL";
+            mt.sendKeyin(keyIn);
         }
 
-        private void handleObjectsFromMap(IPCCodec codec, IPCEventArgs args)
+        public delegate void voidMethodDelegate();
+        private void actionWhenDataSaved()
         {
-            IEnumerable<IElementGraficzny> data = codec.getElementyGraficzne(args.data);
-            if (data.Count() == 0)
+            if (this.InvokeRequired)
+                this.Invoke(new voidMethodDelegate(actionWhenDataSaved));
+            else
             {
-                MessageBox.Show("Brak danych");
-                return;
+                int rowIndex = this.dataGridView1.SelectedRows[0].Index;
+                this.dataGridView1.SelectedRows[0].Visible = false;
+                if (rowIndex + 1 < this.dataGridView1.Rows.Count - 1)
+                {
+                    this.dataGridView1.Rows[rowIndex + 1].Selected = true;
+                    dataGridView1_RowHeaderMouseClick(null, null);
+                }
             }
         }
 
         #endregion
 
+        private void DBEditorMainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            MapTools mt = new MapTools();
+            mt.unloadAddin();
+        }
     }
 }

@@ -48,7 +48,7 @@ namespace DataBaseEditor
             if (dataReceived != null)
             {
                 IPCEventArgs eventArgs = new IPCEventArgs() {senderFunc = senderFunction, data = args.data };
-                dataReceived(this, eventArgs);   //przesyłam dalej, obsługa konkretnych działań w module graficznym
+                dataReceived(this, eventArgs);   //przesyłam dalej, obsługa konkretnych działań w module głównym
             }            
         }
 
