@@ -362,13 +362,23 @@ namespace DataBaseEditor
 
         private void dataGridView1_RowHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            int selectedRow = dataGridView1.SelectedRows[0].Index;
-            int columnNazwaIndex = dataGridView1.Columns["nazwa"].Index;
-            int columnIDIndex = dataGridView1.Columns["id_wyrobiska"].Index;
-            string idWyrobiska = dataGridView1.Rows[selectedRow].Cells[columnIDIndex].Value.ToString();
-            string nazwaWyrobiska = dataGridView1.Rows[selectedRow].Cells[columnNazwaIndex].Value.ToString();
-            string info = idWyrobiska + ";" + nazwaWyrobiska;
-            this.ipcSender.sendMessage(info, SenderFunction.InformacjaOObiekcie);
+            try
+            {
+                int selectedRow = dataGridView1.SelectedRows[0].Index;
+                int columnNazwaIndex = dataGridView1.Columns["nazwa"].Index;
+                int columnIDIndex = dataGridView1.Columns["id_wyrobiska"].Index;
+                string idWyrobiska = dataGridView1.Rows[selectedRow].Cells[columnIDIndex].Value.ToString();
+                string nazwaWyrobiska = dataGridView1.Rows[selectedRow].Cells[columnNazwaIndex].Value.ToString();
+                string info = idWyrobiska + ";" + nazwaWyrobiska;
+                if(this.ipcSender != null)
+                    this.ipcSender.sendMessage(info, SenderFunction.InformacjaOObiekcie);
+                else
+                    MessageBox.Show("należy najpierw uruchomić narzędzie mapy  ");
+            }
+            catch (NullReferenceException exe)
+            {
+                MessageBox.Show("Błąd kwerendy. Wynik kwerendy musi zawierać pola 'id_wyrobiska' i 'nazwa'");
+            }
         }
 
 
