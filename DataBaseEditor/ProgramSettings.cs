@@ -11,7 +11,7 @@ namespace DataBaseEditor
     {
         //public static string rezerwerConnection = @"Data Source=laptop08\sqlexpress;Initial Catalog=dbrezerwer_test;User ID=marek;Password=root";
         //ustawienia pliku konfiguracyjnego
-        public static string configFileName = "dbEditorConf.xml";
+        public static string configFileName = "config.xml";
         public static string connectionStringDelimiter = "server";
         public static string databaseNameDelimiter = "db_name";
         public static string configFilePath = @"";

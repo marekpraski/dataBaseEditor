@@ -36,7 +36,7 @@
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.sqlQueryTextBox = new System.Windows.Forms.RichTextBox();
+            this.tbSqlQuery = new System.Windows.Forms.RichTextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.pomocToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -44,6 +44,13 @@
             this.label2 = new System.Windows.Forms.Label();
             this.loadNextButton = new System.Windows.Forms.Button();
             this.remainingRowsLabel = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.tbNazwa = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.tbLike = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.tbOrderBy = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -51,7 +58,7 @@
             // displayButton
             // 
             this.displayButton.Enabled = false;
-            this.displayButton.Location = new System.Drawing.Point(464, 147);
+            this.displayButton.Location = new System.Drawing.Point(464, 232);
             this.displayButton.Name = "displayButton";
             this.displayButton.Size = new System.Drawing.Size(75, 23);
             this.displayButton.TabIndex = 0;
@@ -62,7 +69,7 @@
             // undoButton
             // 
             this.undoButton.Enabled = false;
-            this.undoButton.Location = new System.Drawing.Point(464, 193);
+            this.undoButton.Location = new System.Drawing.Point(464, 278);
             this.undoButton.Name = "undoButton";
             this.undoButton.Size = new System.Drawing.Size(75, 23);
             this.undoButton.TabIndex = 1;
@@ -73,7 +80,7 @@
             // saveButton
             // 
             this.saveButton.Enabled = false;
-            this.saveButton.Location = new System.Drawing.Point(464, 243);
+            this.saveButton.Location = new System.Drawing.Point(464, 328);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(75, 23);
             this.saveButton.TabIndex = 2;
@@ -90,10 +97,10 @@
             this.Column2,
             this.Column3,
             this.Column4});
-            this.dataGridView1.Location = new System.Drawing.Point(12, 147);
+            this.dataGridView1.Location = new System.Drawing.Point(12, 173);
             this.dataGridView1.MultiSelect = false;
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(444, 483);
+            this.dataGridView1.Size = new System.Drawing.Size(444, 457);
             this.dataGridView1.TabIndex = 3;
             this.dataGridView1.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.dataGridView1_CellBeginEdit);
             this.dataGridView1.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellEndEdit);
@@ -119,14 +126,14 @@
             this.Column4.HeaderText = "Column4";
             this.Column4.Name = "Column4";
             // 
-            // sqlQueryTextBox
+            // tbSqlQuery
             // 
-            this.sqlQueryTextBox.Location = new System.Drawing.Point(12, 51);
-            this.sqlQueryTextBox.Name = "sqlQueryTextBox";
-            this.sqlQueryTextBox.Size = new System.Drawing.Size(527, 90);
-            this.sqlQueryTextBox.TabIndex = 4;
-            this.sqlQueryTextBox.Text = "";
-            this.sqlQueryTextBox.TextChanged += new System.EventHandler(this.sqlQueryTextBox_TextChangedEvent);
+            this.tbSqlQuery.Location = new System.Drawing.Point(12, 51);
+            this.tbSqlQuery.Name = "tbSqlQuery";
+            this.tbSqlQuery.Size = new System.Drawing.Size(527, 90);
+            this.tbSqlQuery.TabIndex = 4;
+            this.tbSqlQuery.Text = "";
+            this.tbSqlQuery.TextChanged += new System.EventHandler(this.sqlQueryTextBox_TextChangedEvent);
             // 
             // label1
             // 
@@ -194,16 +201,82 @@
             this.remainingRowsLabel.Text = "label3";
             this.remainingRowsLabel.Visible = false;
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(27, 148);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(65, 13);
+            this.label3.TabIndex = 10;
+            this.label3.Text = "where / and";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(377, 148);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(45, 13);
+            this.label4.TabIndex = 11;
+            this.label4.Text = "order by";
+            // 
+            // tbNazwa
+            // 
+            this.tbNazwa.Location = new System.Drawing.Point(98, 145);
+            this.tbNazwa.Name = "tbNazwa";
+            this.tbNazwa.Size = new System.Drawing.Size(100, 20);
+            this.tbNazwa.TabIndex = 12;
+            this.tbNazwa.Text = "nazwa";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(210, 148);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(36, 13);
+            this.label5.TabIndex = 13;
+            this.label5.Text = "like \'%";
+            // 
+            // tbLike
+            // 
+            this.tbLike.Location = new System.Drawing.Point(247, 145);
+            this.tbLike.Name = "tbLike";
+            this.tbLike.Size = new System.Drawing.Size(100, 20);
+            this.tbLike.TabIndex = 14;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(348, 148);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(17, 13);
+            this.label6.TabIndex = 15;
+            this.label6.Text = "%\'";
+            // 
+            // tbOrderBy
+            // 
+            this.tbOrderBy.Location = new System.Drawing.Point(428, 147);
+            this.tbOrderBy.Name = "tbOrderBy";
+            this.tbOrderBy.Size = new System.Drawing.Size(100, 20);
+            this.tbOrderBy.TabIndex = 16;
+            this.tbOrderBy.Text = "1";
+            // 
             // DBEditorMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(558, 642);
+            this.Controls.Add(this.tbOrderBy);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.tbLike);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.tbNazwa);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.remainingRowsLabel);
             this.Controls.Add(this.loadNextButton);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.sqlQueryTextBox);
+            this.Controls.Add(this.tbSqlQuery);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.saveButton);
             this.Controls.Add(this.undoButton);
@@ -231,7 +304,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
-        private System.Windows.Forms.RichTextBox sqlQueryTextBox;
+        private System.Windows.Forms.RichTextBox tbSqlQuery;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem pomocToolStripMenuItem;
@@ -239,6 +312,13 @@
         private System.Windows.Forms.Button loadNextButton;
         private System.Windows.Forms.Label remainingRowsLabel;
         private System.Windows.Forms.ToolStripMenuItem mapaToolStripMenuItem;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox tbNazwa;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox tbLike;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox tbOrderBy;
     }
 }
 

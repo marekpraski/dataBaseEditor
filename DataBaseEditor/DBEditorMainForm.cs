@@ -54,10 +54,11 @@ namespace DataBaseEditor
         private void displayButton_Click(object sender, EventArgs e)
         {
             //przekazuję kwerendę do DBConnectora w celu utworzenia połaczenia, wyciągam od razu nazwę bazy danych, jest potrzebna później
+            this.sqlQuery = constructQuery();
 
             if (configFileValidated)
             {
-                sqlQuery = sqlQueryTextBox.Text;      
+                //tbSqlQuery.Text = this.sqlQuery;      
                 
                 //sql nie widzi różnicy pomiędzy lower i upper case a ma to znaczenie przy wyszukiwaniu słow kluczowych w kwerendzie
                 tableName = connector.getTableNameFromQuery(sqlQuery);
@@ -83,6 +84,20 @@ namespace DataBaseEditor
             }
         }
 
+        private string constructQuery()
+        {
+            string queryPart1 = tbSqlQuery.Text;
+            string queryPart2 = "";
+            string queryPart3 = "";
+            if(!String.IsNullOrEmpty(tbLike.Text))
+                if(queryPart1.ToLower().Contains("where"))
+                    queryPart2 = " and " + tbNazwa.Text + " like '%" + tbLike.Text + "%' ";
+            else
+                    queryPart2 = " where " + tbNazwa.Text + " like '%" + tbLike.Text + "%' ";
+            if (!String.IsNullOrEmpty(tbOrderBy.Text))
+                queryPart3 = " order by " + tbOrderBy.Text;
+            return queryPart1 + queryPart2 + queryPart3;
+        }
 
         private void UndoButton_Click(object sender, EventArgs e)
         {
@@ -141,7 +156,7 @@ namespace DataBaseEditor
         //tj użytkownik wpisał kwerendę w polu tekstowym
         private void sqlQueryTextBox_TextChangedEvent(object sender, EventArgs e)
         {
-            if (sqlQueryTextBox.Text != "") // && dbConnection != null)
+            if (tbSqlQuery.Text != "") // && dbConnection != null)
             {
                 displayButton.Enabled = true;
             }
@@ -294,7 +309,7 @@ namespace DataBaseEditor
             formatter.changeUndoButtonLocation(ref undoButton);
             formatter.changeLoadNextButtonLocation(loadNextButton);
             formatter.changeRemainingRowsLabelLocation(remainingRowsLabel);
-            formatter.setTextboxSize(ref sqlQueryTextBox);
+            formatter.setTextboxSize(ref tbSqlQuery);
             this.Width = formatter.calculateFormWidth();
         }
 
