@@ -367,7 +367,7 @@ namespace DataBaseEditor
             }
             else
             {
-                MapTools mt = new MapTools();
+                MapTools mt = new MapTools(Program.platformaGraficzna);
                 if (!Program.isAddinConnected)
                     mt.startAddin(Program.port1, Program.port2);
                 else
@@ -407,7 +407,7 @@ namespace DataBaseEditor
                     handleHandshake();
                     break;
                 case SenderFunction.ConfirmationAddinOnline:
-                    startMaincoalTools(new MapTools());
+                    startMaincoalTools(new MapTools(Program.platformaGraficzna));
                     break;
                 case SenderFunction.DataSaved:
                     actionWhenDataSaved();
@@ -434,8 +434,7 @@ namespace DataBaseEditor
 
         private void startMaincoalTools(MapTools mt)
         {
-            string keyIn = @"ASSEMBLY MAINCOALTOOL";
-            mt.sendKeyin(keyIn);
+            mt.startMaincoalTools();
         }
 
         public delegate void voidMethodDelegate();
@@ -459,7 +458,7 @@ namespace DataBaseEditor
 
         private void DBEditorMainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            MapTools mt = new MapTools();
+            MapTools mt = new MapTools(Program.platformaGraficzna);
             mt.unloadAddin();
         }
     }

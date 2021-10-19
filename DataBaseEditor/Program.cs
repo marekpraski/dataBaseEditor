@@ -13,6 +13,7 @@ namespace DataBaseEditor
         public static int port1 = 100;  //porty do komunikacji TPC z add-inem
         public static int port2 = 101;
         public static bool isAddinConnected = false;    //czy jest połączenie TCP pomiędzy Ewid a addinem
+        public static MapInterfaceObjects.CADPlatformType platformaGraficzna = MapInterfaceObjects.CADPlatformType.ustation;
         /// <summary>
         /// Do rozpoznania jaka aplikacja graficzna ma być uruchomiona
         /// </summary>

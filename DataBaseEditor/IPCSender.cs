@@ -33,7 +33,7 @@ namespace DataBaseEditor
         public bool sendConnectionData(DBConnectionData connectionData)
         {
             byte[] bytes = connectionData.toByteArray();
-            return ipcHandler.sendConnectionData(bytes, IPCAppType.MAIN, SenderFunction.DBConnectionData);
+            return ipcHandler.sendBytes(bytes, IPCAppType.MAIN, SenderFunction.DBConnectionData);
         }
 
         public bool sendMessage(string message, SenderFunction senderFunction)
