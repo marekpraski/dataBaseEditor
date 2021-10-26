@@ -39,18 +39,21 @@
             this.tbSqlQuery = new System.Windows.Forms.RichTextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.pomocToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.mapaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsPomoc = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsUruchomMudulGraf = new System.Windows.Forms.ToolStripMenuItem();
             this.label2 = new System.Windows.Forms.Label();
             this.loadNextButton = new System.Windows.Forms.Button();
             this.remainingRowsLabel = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
+            this.labelWhereAnd = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.tbNazwa = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.tbLike = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.tbOrderBy = new System.Windows.Forms.TextBox();
+            this.tsWyswietlNaMapie = new System.Windows.Forms.ToolStripMenuItem();
+            this.labelZatwierdzone = new System.Windows.Forms.Label();
+            this.cbZatwierdzone = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -75,6 +78,7 @@
             this.undoButton.TabIndex = 1;
             this.undoButton.Text = "cofnij";
             this.undoButton.UseVisualStyleBackColor = true;
+            this.undoButton.Visible = false;
             this.undoButton.Click += new System.EventHandler(this.UndoButton_Click);
             // 
             // saveButton
@@ -86,6 +90,7 @@
             this.saveButton.TabIndex = 2;
             this.saveButton.Text = "zapisz";
             this.saveButton.UseVisualStyleBackColor = true;
+            this.saveButton.Visible = false;
             this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
             // 
             // dataGridView1
@@ -97,10 +102,11 @@
             this.Column2,
             this.Column3,
             this.Column4});
-            this.dataGridView1.Location = new System.Drawing.Point(12, 173);
+            this.dataGridView1.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.dataGridView1.Location = new System.Drawing.Point(12, 172);
             this.dataGridView1.MultiSelect = false;
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(444, 457);
+            this.dataGridView1.Size = new System.Drawing.Size(444, 458);
             this.dataGridView1.TabIndex = 3;
             this.dataGridView1.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.dataGridView1_CellBeginEdit);
             this.dataGridView1.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellEndEdit);
@@ -147,27 +153,28 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.pomocToolStripMenuItem,
-            this.mapaToolStripMenuItem});
+            this.tsPomoc,
+            this.tsUruchomMudulGraf,
+            this.tsWyswietlNaMapie});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(558, 24);
             this.menuStrip1.TabIndex = 6;
             this.menuStrip1.Text = "menuStrip1";
             // 
-            // pomocToolStripMenuItem
+            // tsPomoc
             // 
-            this.pomocToolStripMenuItem.Name = "pomocToolStripMenuItem";
-            this.pomocToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
-            this.pomocToolStripMenuItem.Text = "Pomoc";
-            this.pomocToolStripMenuItem.Click += new System.EventHandler(this.PomocToolStripMenuItem_Click);
+            this.tsPomoc.Name = "tsPomoc";
+            this.tsPomoc.Size = new System.Drawing.Size(57, 20);
+            this.tsPomoc.Text = "Pomoc";
+            this.tsPomoc.Click += new System.EventHandler(this.PomocToolStripMenuItem_Click);
             // 
-            // mapaToolStripMenuItem
+            // tsUruchomMudulGraf
             // 
-            this.mapaToolStripMenuItem.Name = "mapaToolStripMenuItem";
-            this.mapaToolStripMenuItem.Size = new System.Drawing.Size(49, 20);
-            this.mapaToolStripMenuItem.Text = "Mapa";
-            this.mapaToolStripMenuItem.Click += new System.EventHandler(this.mapaToolStripMenuItem_Click);
+            this.tsUruchomMudulGraf.Name = "tsUruchomMudulGraf";
+            this.tsUruchomMudulGraf.Size = new System.Drawing.Size(158, 20);
+            this.tsUruchomMudulGraf.Text = "Uruchom moduł graficzny";
+            this.tsUruchomMudulGraf.Click += new System.EventHandler(this.mapaToolStripMenuItem_Click);
             // 
             // label2
             // 
@@ -201,19 +208,19 @@
             this.remainingRowsLabel.Text = "label3";
             this.remainingRowsLabel.Visible = false;
             // 
-            // label3
+            // labelWhereAnd
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(27, 148);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(65, 13);
-            this.label3.TabIndex = 10;
-            this.label3.Text = "where / and";
+            this.labelWhereAnd.AutoSize = true;
+            this.labelWhereAnd.Location = new System.Drawing.Point(128, 149);
+            this.labelWhereAnd.Name = "labelWhereAnd";
+            this.labelWhereAnd.Size = new System.Drawing.Size(65, 13);
+            this.labelWhereAnd.TabIndex = 10;
+            this.labelWhereAnd.Text = "where / and";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(377, 148);
+            this.label4.Location = new System.Drawing.Point(412, 149);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(45, 13);
             this.label4.TabIndex = 11;
@@ -221,16 +228,16 @@
             // 
             // tbNazwa
             // 
-            this.tbNazwa.Location = new System.Drawing.Point(98, 145);
+            this.tbNazwa.Location = new System.Drawing.Point(194, 145);
             this.tbNazwa.Name = "tbNazwa";
-            this.tbNazwa.Size = new System.Drawing.Size(100, 20);
+            this.tbNazwa.Size = new System.Drawing.Size(57, 20);
             this.tbNazwa.TabIndex = 12;
             this.tbNazwa.Text = "nazwa";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(210, 148);
+            this.label5.Location = new System.Drawing.Point(254, 149);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(36, 13);
             this.label5.TabIndex = 13;
@@ -238,7 +245,7 @@
             // 
             // tbLike
             // 
-            this.tbLike.Location = new System.Drawing.Point(247, 145);
+            this.tbLike.Location = new System.Drawing.Point(291, 145);
             this.tbLike.Name = "tbLike";
             this.tbLike.Size = new System.Drawing.Size(100, 20);
             this.tbLike.TabIndex = 14;
@@ -246,7 +253,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(348, 148);
+            this.label6.Location = new System.Drawing.Point(392, 149);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(17, 13);
             this.label6.TabIndex = 15;
@@ -254,24 +261,53 @@
             // 
             // tbOrderBy
             // 
-            this.tbOrderBy.Location = new System.Drawing.Point(428, 147);
+            this.tbOrderBy.Location = new System.Drawing.Point(463, 145);
             this.tbOrderBy.Name = "tbOrderBy";
-            this.tbOrderBy.Size = new System.Drawing.Size(100, 20);
+            this.tbOrderBy.Size = new System.Drawing.Size(28, 20);
             this.tbOrderBy.TabIndex = 16;
             this.tbOrderBy.Text = "1";
+            // 
+            // tsWyswietlNaMapie
+            // 
+            this.tsWyswietlNaMapie.Name = "tsWyswietlNaMapie";
+            this.tsWyswietlNaMapie.Size = new System.Drawing.Size(118, 20);
+            this.tsWyswietlNaMapie.Text = "Wyświetl na mapie";
+            this.tsWyswietlNaMapie.Click += new System.EventHandler(this.tsWyswietlNaMapie_Click);
+            // 
+            // labelZatwierdzone
+            // 
+            this.labelZatwierdzone.AutoSize = true;
+            this.labelZatwierdzone.Location = new System.Drawing.Point(12, 148);
+            this.labelZatwierdzone.Name = "labelZatwierdzone";
+            this.labelZatwierdzone.Size = new System.Drawing.Size(81, 13);
+            this.labelZatwierdzone.TabIndex = 17;
+            this.labelZatwierdzone.Text = "zatwierdzone = ";
+            // 
+            // cbZatwierdzone
+            // 
+            this.cbZatwierdzone.FormattingEnabled = true;
+            this.cbZatwierdzone.Items.AddRange(new object[] {
+            "0",
+            "1"});
+            this.cbZatwierdzone.Location = new System.Drawing.Point(91, 145);
+            this.cbZatwierdzone.Name = "cbZatwierdzone";
+            this.cbZatwierdzone.Size = new System.Drawing.Size(35, 21);
+            this.cbZatwierdzone.TabIndex = 19;
             // 
             // DBEditorMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(558, 642);
+            this.Controls.Add(this.cbZatwierdzone);
+            this.Controls.Add(this.labelZatwierdzone);
             this.Controls.Add(this.tbOrderBy);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.tbLike);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.tbNazwa);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.label3);
+            this.Controls.Add(this.labelWhereAnd);
             this.Controls.Add(this.remainingRowsLabel);
             this.Controls.Add(this.loadNextButton);
             this.Controls.Add(this.label2);
@@ -284,7 +320,7 @@
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "DBEditorMainForm";
-            this.Text = "Edytor Bazy Danych";
+            this.Text = "Edytor osi wyrobisk";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DBEditorMainForm_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.menuStrip1.ResumeLayout(false);
@@ -307,18 +343,21 @@
         private System.Windows.Forms.RichTextBox tbSqlQuery;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem pomocToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem tsPomoc;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button loadNextButton;
         private System.Windows.Forms.Label remainingRowsLabel;
-        private System.Windows.Forms.ToolStripMenuItem mapaToolStripMenuItem;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.ToolStripMenuItem tsUruchomMudulGraf;
+        private System.Windows.Forms.Label labelWhereAnd;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox tbNazwa;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox tbLike;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox tbOrderBy;
+        private System.Windows.Forms.ToolStripMenuItem tsWyswietlNaMapie;
+        private System.Windows.Forms.Label labelZatwierdzone;
+        private System.Windows.Forms.ComboBox cbZatwierdzone;
     }
 }
 

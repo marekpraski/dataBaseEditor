@@ -11,11 +11,16 @@ using MapInterface;
 using System.Diagnostics;
 using MapInterfaceObjects;
 using InterProcessCommunication;
+using System.Xml.Linq;
 
 namespace DataBaseEditor
 {
     public partial class DBEditorMainForm : Form
     {
+        private enum ApplicationType { insert, update}
+
+        private ApplicationType appType = ApplicationType.update;       //ustawić odpowiednio dla kompilacji dla PRGW (insert) lub Bogdanka (update)
+
         private DataGridHandler dg1Handler;
         private FormFormatter formatter;
         private DataGridCell changedCell;
@@ -42,7 +47,34 @@ namespace DataBaseEditor
             label2.Visible = !configFileValidated;
             dg1Handler = new DataGridHandler();  //każdy datagrid musi mieć swoją instancję DataGridHandlera
             formatter = new FormFormatter();
+            initialSettings();
+        }
 
+        private void initialSettings()
+        {
+            if(this.appType == ApplicationType.insert)
+            {
+                tsWyswietlNaMapie.Visible = false;
+                labelZatwierdzone.Visible = false;
+                cbZatwierdzone.Visible = false;
+            }
+            else if (this.appType == ApplicationType.update)
+            {
+                tbSqlQuery.Text = @"Select Wyrobiska.id_wyrobiska, Wyrobiska.nazwa, Wyrobiska.typWyrob, Wyrobiska.id_poziomu, Wyrobiska.id_pokladu, WyrobiskaLinieCentralne.zatwierdzone
+	                                 from WyrobiskaLinieCentralne
+                                    inner join Wyrobiska on WyrobiskaLinieCentralne.id_wyrobiska = Wyrobiska.id_wyrobiska 
+                                    where WyrobiskaLinieCentralne.zatwierdzone = ";
+                tbSqlQuery.ReadOnly = true;
+                cbZatwierdzone.SelectedIndex = 0;
+                labelWhereAnd.Text = "and";
+                sqlQueryTextBox_TextChangedEvent(null, null);
+            }                
+        }
+
+        private void DBEditorMainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            MapTools mt = new MapTools(Program.platformaGraficzna);
+            mt.unloadAddin();
         }
 
 
@@ -89,6 +121,8 @@ namespace DataBaseEditor
             string queryPart1 = tbSqlQuery.Text;
             string queryPart2 = "";
             string queryPart3 = "";
+            if (this.appType == ApplicationType.update)
+                queryPart1 += cbZatwierdzone.Text;
             if(!String.IsNullOrEmpty(tbLike.Text))
                 if(queryPart1.ToLower().Contains("where"))
                     queryPart2 = " and " + tbNazwa.Text + " like '%" + tbLike.Text + "%' ";
@@ -314,7 +348,7 @@ namespace DataBaseEditor
         }
 
  
-        private string generateUpdateQuery(string dbName, DataGridCell cell)
+        private string generateUpdateQuery(string tableName, DataGridCell cell)
         {
             int columnIndex = cell.getCellIndex(cellIndexTypes.columnIndex);
             CellConverter cellConverter = new CellConverter();
@@ -324,9 +358,9 @@ namespace DataBaseEditor
             string newValue = cellConverter.getConvertedValue(ref cell);
             if (newValue == null)
             {
-                return "update " + dbName + " set " + columnName + "= null" + " where " + primaryKeyColumnName + "='" + primaryKey.ToString() + "'";
+                return "update " + tableName + " set " + columnName + "= null" + " where " + primaryKeyColumnName + "='" + primaryKey.ToString() + "'";
             }
-            return "update " + dbName + " set " + columnName + "=" + cellConverter.getConvertedValue(ref cell) + " where " + primaryKeyColumnName + "='" + primaryKey.ToString() + "'"; ;
+            return "update " + tableName + " set " + columnName + "=" + cellConverter.getConvertedValue(ref cell) + " where " + primaryKeyColumnName + "='" + primaryKey.ToString() + "'"; ;
         }
 
 
@@ -372,27 +406,6 @@ namespace DataBaseEditor
                     mt.startAddin(Program.port1, Program.port2);
                 else
                     startMaincoalTools(mt);
-            }
-        }
-
-        private void dataGridView1_RowHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
-        {
-            try
-            {
-                int selectedRow = dataGridView1.SelectedRows[0].Index;
-                int columnNazwaIndex = dataGridView1.Columns["nazwa"].Index;
-                int columnIDIndex = dataGridView1.Columns["id_wyrobiska"].Index;
-                string idWyrobiska = dataGridView1.Rows[selectedRow].Cells[columnIDIndex].Value.ToString();
-                string nazwaWyrobiska = dataGridView1.Rows[selectedRow].Cells[columnNazwaIndex].Value.ToString();
-                string info = idWyrobiska + ";" + nazwaWyrobiska;
-                if(this.ipcSender != null)
-                    this.ipcSender.sendMessage(info, SenderFunction.InformacjaOObiekcie);
-                else
-                    MessageBox.Show("należy najpierw uruchomić narzędzie mapy  ");
-            }
-            catch (NullReferenceException exe)
-            {
-                MessageBox.Show("Błąd kwerendy. Wynik kwerendy musi zawierać pola 'id_wyrobiska' i 'nazwa'");
             }
         }
 
@@ -456,10 +469,85 @@ namespace DataBaseEditor
 
         #endregion
 
-        private void DBEditorMainForm_FormClosing(object sender, FormClosingEventArgs e)
+        #region interakcja użytkownika, kliknięcia nagłówka wiersza datagrida
+
+        private void dataGridView1_RowHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            MapTools mt = new MapTools(Program.platformaGraficzna);
-            mt.unloadAddin();
+            try
+            {
+                int selectedRow = dataGridView1.SelectedRows[0].Index;
+                int columnNazwaIndex = dataGridView1.Columns["nazwa"].Index;
+                int columnIDIndex = dataGridView1.Columns["id_wyrobiska"].Index;
+                string idWyrobiska = dataGridView1.Rows[selectedRow].Cells[columnIDIndex].Value.ToString();
+                string nazwaWyrobiska = dataGridView1.Rows[selectedRow].Cells[columnNazwaIndex].Value.ToString();
+                string info = idWyrobiska + ";" + nazwaWyrobiska;
+                if (this.ipcSender != null)
+                    this.ipcSender.sendMessage(info, SenderFunction.InformacjaOObiekcie);
+                else
+                    MessageBox.Show("należy najpierw uruchomić narzędzie mapy  ");
+            }
+            catch (NullReferenceException exe)
+            {
+                MessageBox.Show("Błąd kwerendy. Wynik kwerendy musi zawierać pola 'id_wyrobiska' i 'nazwa'");
+            }
         }
+
+        #endregion
+
+        #region wyświetlanie linii centralnych i znaczników na mapie przyciskiem Wyświetl na mapie
+
+        private void tsWyswietlNaMapie_Click(object sender, EventArgs e)
+        {
+            if (ipcSender == null)
+            {
+                MessageBox.Show("należy najpierw wyświetlić dane w datagridzie i uruchomić narzędzie mapy  ");
+                return;
+            }
+
+            KeyinParameters kp = new KeyinParameters() { displayParams = getDisplayParams(), queryParams = getQueryParams(), typObiektu = TypObiektuMapy.LiniaCentralnaWyrobiska };
+            ipcSender.sendMessage(kp.toXmlString(), SenderFunction.DisplayObjectsOnMap);
+        }
+
+        private QueryInputParams getQueryParams()
+        {
+            QueryInputParams qd = new QueryInputParams()
+            {
+                textTableName = this.tableName,
+                textIdentityColumn = "id_wyrobiska",
+                textGeometryColumn = "geometriaPunktStart",
+                textColumn = "znacznikPunktStart",
+                linestringTableName = this.tableName,
+                linestringIdentityColumn = "id_wyrobiska",
+                linestringGeometryColumn = "geometriaLiniiCentralnej",
+                selectCondition = extractQueryCondition(this.sqlQuery)
+            };
+            return qd;
+        }
+
+        private string extractQueryCondition(string sqlQuery)
+        {
+            if (!sqlQuery.ToLower().Contains("where"))
+                return "";
+
+            int startIndex = sqlQuery.ToLower().IndexOf("where");
+            int substringLength = sqlQuery.Length - startIndex;
+            if (sqlQuery.ToLower().Contains("order by"))
+                substringLength = sqlQuery.ToLower().IndexOf("order by") - startIndex;
+
+            return sqlQuery.Substring(startIndex, substringLength);
+        }
+
+        private DisplayParams getDisplayParams()
+        {
+            return new DisplayParams()
+            {
+                CADColourAsInt = 0,
+                levelName = "osieWyrobiskWBazie",
+                lineThickness = 0,
+                lineStyleName = "0"
+            };
+        }
+
+        #endregion
     }
 }
