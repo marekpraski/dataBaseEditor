@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.displayButton = new System.Windows.Forms.Button();
+            this.btnWyswietl = new System.Windows.Forms.Button();
             this.undoButton = new System.Windows.Forms.Button();
             this.saveButton = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
@@ -41,6 +41,7 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.tsPomoc = new System.Windows.Forms.ToolStripMenuItem();
             this.tsUruchomMudulGraf = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsWyswietlNaMapie = new System.Windows.Forms.ToolStripMenuItem();
             this.label2 = new System.Windows.Forms.Label();
             this.loadNextButton = new System.Windows.Forms.Button();
             this.remainingRowsLabel = new System.Windows.Forms.Label();
@@ -51,23 +52,22 @@
             this.tbLike = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.tbOrderBy = new System.Windows.Forms.TextBox();
-            this.tsWyswietlNaMapie = new System.Windows.Forms.ToolStripMenuItem();
             this.labelZatwierdzone = new System.Windows.Forms.Label();
             this.cbZatwierdzone = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // displayButton
+            // btnWyswietl
             // 
-            this.displayButton.Enabled = false;
-            this.displayButton.Location = new System.Drawing.Point(464, 232);
-            this.displayButton.Name = "displayButton";
-            this.displayButton.Size = new System.Drawing.Size(75, 23);
-            this.displayButton.TabIndex = 0;
-            this.displayButton.Text = "wyświetl";
-            this.displayButton.UseVisualStyleBackColor = true;
-            this.displayButton.Click += new System.EventHandler(this.displayButton_Click);
+            this.btnWyswietl.Enabled = false;
+            this.btnWyswietl.Location = new System.Drawing.Point(464, 232);
+            this.btnWyswietl.Name = "btnWyswietl";
+            this.btnWyswietl.Size = new System.Drawing.Size(75, 23);
+            this.btnWyswietl.TabIndex = 0;
+            this.btnWyswietl.Text = "wyświetl";
+            this.btnWyswietl.UseVisualStyleBackColor = true;
+            this.btnWyswietl.Click += new System.EventHandler(this.btnWyswietl_Click);
             // 
             // undoButton
             // 
@@ -176,6 +176,13 @@
             this.tsUruchomMudulGraf.Text = "Uruchom moduł graficzny";
             this.tsUruchomMudulGraf.Click += new System.EventHandler(this.mapaToolStripMenuItem_Click);
             // 
+            // tsWyswietlNaMapie
+            // 
+            this.tsWyswietlNaMapie.Name = "tsWyswietlNaMapie";
+            this.tsWyswietlNaMapie.Size = new System.Drawing.Size(118, 20);
+            this.tsWyswietlNaMapie.Text = "Wyświetl na mapie";
+            this.tsWyswietlNaMapie.Click += new System.EventHandler(this.tsWyswietlNaMapie_Click);
+            // 
             // label2
             // 
             this.label2.AutoSize = true;
@@ -267,13 +274,6 @@
             this.tbOrderBy.TabIndex = 16;
             this.tbOrderBy.Text = "1";
             // 
-            // tsWyswietlNaMapie
-            // 
-            this.tsWyswietlNaMapie.Name = "tsWyswietlNaMapie";
-            this.tsWyswietlNaMapie.Size = new System.Drawing.Size(118, 20);
-            this.tsWyswietlNaMapie.Text = "Wyświetl na mapie";
-            this.tsWyswietlNaMapie.Click += new System.EventHandler(this.tsWyswietlNaMapie_Click);
-            // 
             // labelZatwierdzone
             // 
             this.labelZatwierdzone.AutoSize = true;
@@ -316,7 +316,7 @@
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.saveButton);
             this.Controls.Add(this.undoButton);
-            this.Controls.Add(this.displayButton);
+            this.Controls.Add(this.btnWyswietl);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "DBEditorMainForm";
@@ -332,7 +332,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Button displayButton;
+        private System.Windows.Forms.Button btnWyswietl;
         private System.Windows.Forms.Button undoButton;
         private System.Windows.Forms.Button saveButton;
         private System.Windows.Forms.DataGridView dataGridView1;

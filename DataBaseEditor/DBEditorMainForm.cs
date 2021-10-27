@@ -83,7 +83,7 @@ namespace DataBaseEditor
 
         //button, którego kliknięcie wypełnia danymi z kwerendy główny datagrid
         //jest to pierwszy przycisk, który użytkownik może nacisnąć po wpisaniu kwerendy w pole tekstowe
-        private void displayButton_Click(object sender, EventArgs e)
+        private void btnWyswietl_Click(object sender, EventArgs e)
         {
             //przekazuję kwerendę do DBConnectora w celu utworzenia połaczenia, wyciągam od razu nazwę bazy danych, jest potrzebna później
             this.sqlQuery = constructQuery();
@@ -192,14 +192,13 @@ namespace DataBaseEditor
         {
             if (tbSqlQuery.Text != "") // && dbConnection != null)
             {
-                displayButton.Enabled = true;
+                btnWyswietl.Enabled = true;
             }
             else
             {
-                displayButton.Enabled = false;
+                btnWyswietl.Enabled = false;
             }
         }
-
  
 
         private void dataGridView1_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
@@ -233,9 +232,6 @@ namespace DataBaseEditor
                 dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = changedCell.getCellValue(cellValueTypes.oldValue);
             }
         }
-
-
-
 
         #endregion
 
@@ -338,7 +334,7 @@ namespace DataBaseEditor
         {
             List<int> colWidths = queryData.getColumnWidths(dataGrid.Font,30);         //szerokości kolummn datagridu z danych z kwerendy
             formatter.formatDatagrid(ref dataGrid, numberOfHeaders, colWidths);
-            formatter.changeDisplayButtonLocation(ref displayButton);
+            formatter.changeDisplayButtonLocation(ref btnWyswietl);
             formatter.changeSaveButtonLocation(ref saveButton);
             formatter.changeUndoButtonLocation(ref undoButton);
             formatter.changeLoadNextButtonLocation(loadNextButton);
@@ -422,8 +418,8 @@ namespace DataBaseEditor
                 case SenderFunction.ConfirmationAddinOnline:
                     startMaincoalTools(new MapTools(Program.platformaGraficzna));
                     break;
-                case SenderFunction.DataSaved:
-                    actionWhenDataSaved();
+                case SenderFunction.MaincoalDataSaved:
+                    actionWhenDataSaved(codec.getString(args.data));
                     break;
             }
         }
@@ -450,21 +446,48 @@ namespace DataBaseEditor
             mt.startMaincoalTools();
         }
 
-        public delegate void voidMethodDelegate();
-        private void actionWhenDataSaved()
+        public delegate void dataSavedMethodDelegate(string idWyrobiska);
+        private void actionWhenDataSaved(string idWyrobiska)
         {
             if (this.InvokeRequired)
-                this.Invoke(new voidMethodDelegate(actionWhenDataSaved));
+                this.Invoke(new dataSavedMethodDelegate(actionWhenDataSaved), idWyrobiska);
             else
             {
-                int rowIndex = this.dataGridView1.SelectedRows[0].Index;
-                this.dataGridView1.SelectedRows[0].Visible = false;
-                if (rowIndex + 1 < this.dataGridView1.Rows.Count - 1)
-                {
-                    this.dataGridView1.Rows[rowIndex + 1].Selected = true;
-                    dataGridView1_RowHeaderMouseClick(null, null);
-                }
+                if (this.appType == ApplicationType.insert)
+                    actionWhenDataInserted();
+                else if (this.appType == ApplicationType.update)
+                    actionWhenDataUpdated(idWyrobiska);
             }
+        }
+
+        private void actionWhenDataInserted()
+        {
+            int rowIndex = this.dataGridView1.SelectedRows[0].Index;
+            this.dataGridView1.SelectedRows[0].Visible = false;
+            if (rowIndex + 1 < this.dataGridView1.Rows.Count - 1)
+            {
+                this.dataGridView1.Rows[rowIndex + 1].Selected = true;
+                dataGridView1_RowHeaderMouseClick(null, null);
+            }
+        }
+
+        private void actionWhenDataUpdated(string idWyrobiska)
+        {
+            int rowIndex = getRowIndexForUpdatedWyrobisko(idWyrobiska);
+            if (rowIndex == -1)
+                MessageBox.Show("Nie znaleziono wyrobiska w datagridzie ???");
+            else
+                this.dataGridView1.Rows[rowIndex].Visible = false;
+        }
+
+        private int getRowIndexForUpdatedWyrobisko(string idWyrobiska)
+        {
+            for (int i = 0; i < this.dataGridView1.RowCount; i++)
+            {
+                if (this.dataGridView1.Rows[i].Cells[0].Value.ToString().Equals(idWyrobiska))
+                    return i;
+            }
+            return -1;
         }
 
         #endregion
