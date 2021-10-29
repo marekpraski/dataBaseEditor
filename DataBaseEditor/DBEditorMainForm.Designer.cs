@@ -28,6 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DBEditorMainForm));
             this.btnWyswietl = new System.Windows.Forms.Button();
             this.undoButton = new System.Windows.Forms.Button();
             this.saveButton = new System.Windows.Forms.Button();
@@ -38,10 +40,6 @@
             this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tbSqlQuery = new System.Windows.Forms.RichTextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.tsPomoc = new System.Windows.Forms.ToolStripMenuItem();
-            this.tsUruchomMudulGraf = new System.Windows.Forms.ToolStripMenuItem();
-            this.tsWyswietlNaMapie = new System.Windows.Forms.ToolStripMenuItem();
             this.label2 = new System.Windows.Forms.Label();
             this.loadNextButton = new System.Windows.Forms.Button();
             this.remainingRowsLabel = new System.Windows.Forms.Label();
@@ -54,8 +52,15 @@
             this.tbOrderBy = new System.Windows.Forms.TextBox();
             this.labelZatwierdzone = new System.Windows.Forms.Label();
             this.cbZatwierdzone = new System.Windows.Forms.ComboBox();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.tsPomoc = new System.Windows.Forms.ToolStripButton();
+            this.tsUruchomModulGraficzny = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.tsWyswietlOryginalne = new System.Windows.Forms.ToolStripButton();
+            this.cbOryginalneCzyZmienione = new System.Windows.Forms.ToolStripComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-            this.menuStrip1.SuspendLayout();
+            this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnWyswietl
@@ -104,7 +109,6 @@
             this.Column4});
             this.dataGridView1.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.dataGridView1.Location = new System.Drawing.Point(12, 172);
-            this.dataGridView1.MultiSelect = false;
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.Size = new System.Drawing.Size(444, 458);
             this.dataGridView1.TabIndex = 3;
@@ -149,39 +153,6 @@
             this.label1.Size = new System.Drawing.Size(70, 13);
             this.label1.TabIndex = 5;
             this.label1.Text = "kwerenda sql";
-            // 
-            // menuStrip1
-            // 
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsPomoc,
-            this.tsUruchomMudulGraf,
-            this.tsWyswietlNaMapie});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(558, 24);
-            this.menuStrip1.TabIndex = 6;
-            this.menuStrip1.Text = "menuStrip1";
-            // 
-            // tsPomoc
-            // 
-            this.tsPomoc.Name = "tsPomoc";
-            this.tsPomoc.Size = new System.Drawing.Size(57, 20);
-            this.tsPomoc.Text = "Pomoc";
-            this.tsPomoc.Click += new System.EventHandler(this.PomocToolStripMenuItem_Click);
-            // 
-            // tsUruchomMudulGraf
-            // 
-            this.tsUruchomMudulGraf.Name = "tsUruchomMudulGraf";
-            this.tsUruchomMudulGraf.Size = new System.Drawing.Size(158, 20);
-            this.tsUruchomMudulGraf.Text = "Uruchom moduł graficzny";
-            this.tsUruchomMudulGraf.Click += new System.EventHandler(this.mapaToolStripMenuItem_Click);
-            // 
-            // tsWyswietlNaMapie
-            // 
-            this.tsWyswietlNaMapie.Name = "tsWyswietlNaMapie";
-            this.tsWyswietlNaMapie.Size = new System.Drawing.Size(118, 20);
-            this.tsWyswietlNaMapie.Text = "Wyświetl na mapie";
-            this.tsWyswietlNaMapie.Click += new System.EventHandler(this.tsWyswietlNaMapie_Click);
             // 
             // label2
             // 
@@ -293,12 +264,75 @@
             this.cbZatwierdzone.Name = "cbZatwierdzone";
             this.cbZatwierdzone.Size = new System.Drawing.Size(35, 21);
             this.cbZatwierdzone.TabIndex = 19;
+            this.cbZatwierdzone.SelectedIndexChanged += new System.EventHandler(this.cbZatwierdzone_SelectedIndexChanged);
+            // 
+            // toolStrip1
+            // 
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsPomoc,
+            this.tsUruchomModulGraficzny,
+            this.toolStripSeparator1,
+            this.tsWyswietlOryginalne,
+            this.cbOryginalneCzyZmienione});
+            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(553, 25);
+            this.toolStrip1.TabIndex = 20;
+            this.toolStrip1.Text = "toolStrip1";
+            // 
+            // tsPomoc
+            // 
+            this.tsPomoc.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsPomoc.Image = global::DataBaseEditor.Properties.Resources.InfoObiekt;
+            this.tsPomoc.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsPomoc.Name = "tsPomoc";
+            this.tsPomoc.Size = new System.Drawing.Size(23, 22);
+            this.tsPomoc.Text = "toolStripButton3";
+            this.tsPomoc.ToolTipText = "Pomoc";
+            this.tsPomoc.Click += new System.EventHandler(this.PomocToolStripMenuItem_Click);
+            // 
+            // tsUruchomModulGraficzny
+            // 
+            this.tsUruchomModulGraficzny.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsUruchomModulGraficzny.Image = ((System.Drawing.Image)(resources.GetObject("tsUruchomModulGraficzny.Image")));
+            this.tsUruchomModulGraficzny.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsUruchomModulGraficzny.Name = "tsUruchomModulGraficzny";
+            this.tsUruchomModulGraficzny.Size = new System.Drawing.Size(23, 22);
+            this.tsUruchomModulGraficzny.Text = "toolStripButton1";
+            this.tsUruchomModulGraficzny.ToolTipText = "Uruchom moduł graficzny";
+            this.tsUruchomModulGraficzny.Click += new System.EventHandler(this.mapaToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // tsWyswietlOryginalne
+            // 
+            this.tsWyswietlOryginalne.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsWyswietlOryginalne.Image = global::DataBaseEditor.Properties.Resources.PokazMape_23x23;
+            this.tsWyswietlOryginalne.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsWyswietlOryginalne.Name = "tsWyswietlOryginalne";
+            this.tsWyswietlOryginalne.Size = new System.Drawing.Size(23, 22);
+            this.tsWyswietlOryginalne.Text = "toolStripButton2";
+            this.tsWyswietlOryginalne.ToolTipText = "Wyświetl na mapie";
+            this.tsWyswietlOryginalne.Click += new System.EventHandler(this.tsWyswietlNaMapie_Click);
+            // 
+            // cbOryginalneCzyZmienione
+            // 
+            this.cbOryginalneCzyZmienione.Enabled = false;
+            this.cbOryginalneCzyZmienione.Items.AddRange(new object[] {
+            "oryginalne",
+            "zmienione"});
+            this.cbOryginalneCzyZmienione.Name = "cbOryginalneCzyZmienione";
+            this.cbOryginalneCzyZmienione.Size = new System.Drawing.Size(100, 25);
             // 
             // DBEditorMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(558, 642);
+            this.ClientSize = new System.Drawing.Size(553, 640);
+            this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.cbZatwierdzone);
             this.Controls.Add(this.labelZatwierdzone);
             this.Controls.Add(this.tbOrderBy);
@@ -317,14 +351,12 @@
             this.Controls.Add(this.saveButton);
             this.Controls.Add(this.undoButton);
             this.Controls.Add(this.btnWyswietl);
-            this.Controls.Add(this.menuStrip1);
-            this.MainMenuStrip = this.menuStrip1;
             this.Name = "DBEditorMainForm";
             this.Text = "Edytor osi wyrobisk";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DBEditorMainForm_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -342,12 +374,9 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
         private System.Windows.Forms.RichTextBox tbSqlQuery;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem tsPomoc;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button loadNextButton;
         private System.Windows.Forms.Label remainingRowsLabel;
-        private System.Windows.Forms.ToolStripMenuItem tsUruchomMudulGraf;
         private System.Windows.Forms.Label labelWhereAnd;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox tbNazwa;
@@ -355,9 +384,15 @@
         private System.Windows.Forms.TextBox tbLike;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox tbOrderBy;
-        private System.Windows.Forms.ToolStripMenuItem tsWyswietlNaMapie;
         private System.Windows.Forms.Label labelZatwierdzone;
         private System.Windows.Forms.ComboBox cbZatwierdzone;
+        private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.ToolStripButton tsPomoc;
+        private System.Windows.Forms.ToolStripButton tsUruchomModulGraficzny;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripButton tsWyswietlOryginalne;
+        private System.Windows.Forms.ToolStripComboBox cbOryginalneCzyZmienione;
     }
 }
 

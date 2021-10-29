@@ -84,6 +84,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -119,6 +120,18 @@
       <Project>{6720be48-852b-4e2e-adf2-057928fce566}</Project>
       <Name>MapInterface</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PokazMape_23x23.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ZrzucFiltry_23x23.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Image_23x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\InfoObiekt.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

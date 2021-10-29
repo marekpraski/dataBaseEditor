@@ -26,7 +26,7 @@ namespace DataBaseEditor
         private DataGridCell changedCell;
         private DBConnector connector;
         private bool configFileValidated;
-        private string sqlQuery;
+        private string sqlQueryForDisplayInDatagrid;
         private QueryData queryData;
         private SqlConnection dbConnection;
         private string tableName = "";
@@ -54,8 +54,9 @@ namespace DataBaseEditor
         {
             if(this.appType == ApplicationType.insert)
             {
-                tsWyswietlNaMapie.Visible = false;
+                tsWyswietlOryginalne.Visible = false;
                 labelZatwierdzone.Visible = false;
+                cbOryginalneCzyZmienione.Visible = false;
                 cbZatwierdzone.Visible = false;
             }
             else if (this.appType == ApplicationType.update)
@@ -67,6 +68,7 @@ namespace DataBaseEditor
                 tbSqlQuery.ReadOnly = true;
                 cbZatwierdzone.SelectedIndex = 0;
                 labelWhereAnd.Text = "and";
+                cbOryginalneCzyZmienione.SelectedIndex = 0;
                 sqlQueryTextBox_TextChangedEvent(null, null);
             }                
         }
@@ -80,20 +82,27 @@ namespace DataBaseEditor
 
         #region Region - zdarzenia na interakcję z użytkownikiem
 
+        private void cbZatwierdzone_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cbZatwierdzone.SelectedIndex == 0)
+                cbOryginalneCzyZmienione.SelectedIndex = 0;
+            else
+                cbOryginalneCzyZmienione.SelectedIndex = 1;
+        }
 
         //button, którego kliknięcie wypełnia danymi z kwerendy główny datagrid
         //jest to pierwszy przycisk, który użytkownik może nacisnąć po wpisaniu kwerendy w pole tekstowe
         private void btnWyswietl_Click(object sender, EventArgs e)
         {
             //przekazuję kwerendę do DBConnectora w celu utworzenia połaczenia, wyciągam od razu nazwę bazy danych, jest potrzebna później
-            this.sqlQuery = constructQuery();
+            this.sqlQueryForDisplayInDatagrid = constructQueryForDisplayInDatagrid();
 
             if (configFileValidated)
             {
                 //tbSqlQuery.Text = this.sqlQuery;      
                 
                 //sql nie widzi różnicy pomiędzy lower i upper case a ma to znaczenie przy wyszukiwaniu słow kluczowych w kwerendzie
-                tableName = connector.getTableNameFromQuery(sqlQuery);
+                tableName = connector.getTableNameFromQuery(this.sqlQueryForDisplayInDatagrid);
                 dbConnection = connector.getDBConnection(ConnectionDataSource.serverAndDatabaseNamesInFile, ConnectionTypes.sqlAuthorisation);
 
                 if (dg1Handler.checkChangesExist())
@@ -116,21 +125,40 @@ namespace DataBaseEditor
             }
         }
 
-        private string constructQuery()
+        private string constructQueryForDisplayInDatagrid()
         {
-            string queryPart1 = tbSqlQuery.Text;
-            string queryPart2 = "";
-            string queryPart3 = "";
-            if (this.appType == ApplicationType.update)
-                queryPart1 += cbZatwierdzone.Text;
-            if(!String.IsNullOrEmpty(tbLike.Text))
-                if(queryPart1.ToLower().Contains("where"))
-                    queryPart2 = " and " + tbNazwa.Text + " like '%" + tbLike.Text + "%' ";
-            else
-                    queryPart2 = " where " + tbNazwa.Text + " like '%" + tbLike.Text + "%' ";
-            if (!String.IsNullOrEmpty(tbOrderBy.Text))
-                queryPart3 = " order by " + tbOrderBy.Text;
+            string queryPart1 = constructMainQueryBody();
+            string queryPart2 = constructQueryConditionSection(queryPart1);
+            string queryPart3 = constructOrderByQuerySection();
             return queryPart1 + queryPart2 + queryPart3;
+        }
+
+        private string constructMainQueryBody()
+        {
+            string query = tbSqlQuery.Text;
+            if (this.appType == ApplicationType.update)
+                query += cbZatwierdzone.Text;
+
+            return query;
+        }
+
+        private string constructQueryConditionSection(string queryPart1)
+        {
+            if (!String.IsNullOrEmpty(tbLike.Text))
+            {
+                if (queryPart1.ToLower().Contains("where"))
+                    return " and " + tbNazwa.Text + " like '%" + tbLike.Text + "%' ";
+                else
+                    return " where " + tbNazwa.Text + " like '%" + tbLike.Text + "%' ";
+            }
+            return "";
+        }
+
+        private string constructOrderByQuerySection()
+        {
+            if (!String.IsNullOrEmpty(tbOrderBy.Text))
+                return " order by " + tbOrderBy.Text;
+            return "";
         }
 
         private void UndoButton_Click(object sender, EventArgs e)
@@ -181,8 +209,28 @@ namespace DataBaseEditor
 
         private void PomocToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string pomoc = "(*) pierwsza kolumna wyników kwerendy MUSI zawierać ID (lub inny klucz główny)" +
-                "\r\nidentyfikujący jednoznacznie wiersz wyników kwerendy zasilającej datagrid";
+            string pomoc = @"        (1) wpisać kwerendę ( na przykład: SELECT [id_wyrobiska],[nazwa],[typWyrob],[id_poziomu],[id_pokladu] FROM [Wyrobiska] ) i żądany warunek 
+        (2) wyświetlić dane w datagridzie
+        (3) uruchomić moduł graficzny
+        (4) zaznaczyć żądany wiersz w datagridzie
+        (5) zaznaczyć linię centralną na mapie i nacisnąć Przypisz
+        (6) na mapie wyświetlana jest wczytana linia, zaznaczony wiersz znika z datagrida
+        (7) opcje off-setów i zmiany kierunku są wyłączone
+        (8) przycisk informacja otwiera okno informacji i wyświetla info o wyrobisku wczytanym do bazy (trzeba zaznaczyć żądaną zieloną linię)";
+
+            if (this.appType == ApplicationType.update)
+                pomoc = @"        (1) pole kwerendy jest już wypełnione, nie można edytować, można wpisać warunek
+        (2) wyświetlić dane w datagridzie przyciskiem „Wyświetl” po prawej
+        (3) uruchomić moduł graficzny przyciskiem na pasku górnym
+        (4) wyświetlić wyrobiska na mapie (wyświetla te, które są widoczne w datagridzie) przyciskiem na pasku górnym; w zależności od wyboru opcji „zatwierdzone”,  wyświetlane są linie zmodyfikowane bądź oryginalne
+        (5) zaznaczyć żądaną linię wyświetloną z bazy danych, nacisnąć przycisk Informacja, co wyświetla nazwę wyrobiska i id
+        (6) wpisać żądane wartości offsetów; wartości offsetów są ograniczone do +-10 metrów, pozostawienie pól pustych oznacza 0.
+        (7) w razie potrzeby odwrócić kierunek biegu linii; UWAGA: offsety liczone są w stosunku do oryginalnych punktów początku i końca!
+        (8) kliknąć Zatwierdź
+        (9) na mapie wyświetlana jest na zielono zatwierdzona linia; jeżeli wpisane były jakieś offsety, długość linii jest różna od linii oryginalnej; 0 oznacza start a 1 koniec linii
+        (10) z datagrida znika wyrobisko zatwierdzone; uzyskuje ono status zatwierdzone=1, więc w razie potrzeby można je ponownie wczytać do datagrida wybierając 1 z listy wyboru w warunku w oknie głównym
+        (11) jeżeli wyrobisko jest źle przypisane (tj. ta linia centralna nie odpowiada wyrobisku o tej nazwie) można je usunąć z bazy danych przyciskiem Usuń";
+
             MyMessageBox.display(pomoc, MessageBoxType.Information);
         }
 
@@ -245,7 +293,7 @@ namespace DataBaseEditor
             dataGridView1.Columns[0].DefaultCellStyle.BackColor = Color.LightGray;
 
             DBReader reader = new DBReader(dbConnection);
-            queryData = reader.readFromDB(sqlQuery);
+            queryData = reader.readFromDB(this.sqlQueryForDisplayInDatagrid);
 
             //jeżeli kwerenda błędna to nie zwróci wyników
             //przypadki błędnej kwerendy obsługiwane są przez DBReader
@@ -526,6 +574,11 @@ namespace DataBaseEditor
                 MessageBox.Show("należy najpierw wyświetlić dane w datagridzie i uruchomić narzędzie mapy  ");
                 return;
             }
+            if(dataGridView1.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("należy zaznaczyć przynajmniej jedno wyrobisko do wyświetlenia  ");
+                return;
+            }
 
             KeyinParameters kp = new KeyinParameters() { displayParams = getDisplayParams(), queryParams = getQueryParams(), typObiektu = TypObiektuMapy.LiniaCentralnaWyrobiska };
             ipcSender.sendMessage(kp.toXmlString(), SenderFunction.DisplayObjectsOnMap);
@@ -533,16 +586,18 @@ namespace DataBaseEditor
 
         private QueryInputParams getQueryParams()
         {
+            string textGeometryColumn = cbOryginalneCzyZmienione.SelectedIndex == 0 ? "geometriaPunktStart" : "geometriaPunktStartZmodyf";
+            string linestringGeometryColumn = cbOryginalneCzyZmienione.SelectedIndex == 0 ? "geometriaLiniiCentralnej" : "geometriaZmodyfikowanejLiniiCentralnej";
             QueryInputParams qd = new QueryInputParams()
             {
                 textTableName = this.tableName,
                 textIdentityColumn = "id_wyrobiska",
-                textGeometryColumn = "geometriaPunktStart",
+                textGeometryColumn = textGeometryColumn,
                 textColumn = "znacznikPunktStart",
                 linestringTableName = this.tableName,
                 linestringIdentityColumn = "id_wyrobiska",
-                linestringGeometryColumn = "geometriaLiniiCentralnej",
-                selectCondition = extractQueryCondition(this.sqlQuery)
+                linestringGeometryColumn = linestringGeometryColumn,
+                selectCondition = extractQueryCondition(this.sqlQueryForDisplayInDatagrid)
             };
             return qd;
         }
@@ -557,14 +612,32 @@ namespace DataBaseEditor
             if (sqlQuery.ToLower().Contains("order by"))
                 substringLength = sqlQuery.ToLower().IndexOf("order by") - startIndex;
 
-            return sqlQuery.Substring(startIndex, substringLength);
+            string whereCondition = sqlQuery.Substring(startIndex, substringLength);
+            return appendWhereCondition(whereCondition);
         }
+
+        private string appendWhereCondition(string whereCondition)
+        {
+            string newWhereCondition = whereCondition + " and WyrobiskaLinieCentralne.id_wyrobiska in (@idZaznaczonychWyrobisk)";
+            return newWhereCondition.Replace("@idZaznaczonychWyrobisk", getIdsOfSelectedWyrobiska());
+        }
+
+        private string getIdsOfSelectedWyrobiska()
+        {
+            List<string> ids = new List<string>();
+            foreach (DataGridViewRow row in this.dataGridView1.SelectedRows)
+            {
+                ids.Add(row.Cells[0].Value.ToString());
+            }
+            return String.Join(",", ids);
+        }
+
 
         private DisplayParams getDisplayParams()
         {
             return new DisplayParams()
             {
-                CADColourAsInt = 0,
+                CADColourAsInt = -16776961,   //czerwony w RGB
                 levelName = "osieWyrobiskWBazie",
                 lineThickness = 0,
                 lineStyleName = "0"
@@ -572,5 +645,7 @@ namespace DataBaseEditor
         }
 
         #endregion
+
+
     }
 }
