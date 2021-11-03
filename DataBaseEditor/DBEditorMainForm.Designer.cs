@@ -43,9 +43,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.loadNextButton = new System.Windows.Forms.Button();
             this.remainingRowsLabel = new System.Windows.Forms.Label();
-            this.labelWhereAnd = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.tbNazwa = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.tbLike = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -101,6 +99,8 @@
             // dataGridView1
             // 
             this.dataGridView1.AllowUserToAddRows = false;
+            this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Column1,
@@ -186,15 +186,6 @@
             this.remainingRowsLabel.Text = "label3";
             this.remainingRowsLabel.Visible = false;
             // 
-            // labelWhereAnd
-            // 
-            this.labelWhereAnd.AutoSize = true;
-            this.labelWhereAnd.Location = new System.Drawing.Point(128, 149);
-            this.labelWhereAnd.Name = "labelWhereAnd";
-            this.labelWhereAnd.Size = new System.Drawing.Size(65, 13);
-            this.labelWhereAnd.TabIndex = 10;
-            this.labelWhereAnd.Text = "where / and";
-            // 
             // label4
             // 
             this.label4.AutoSize = true;
@@ -204,22 +195,14 @@
             this.label4.TabIndex = 11;
             this.label4.Text = "order by";
             // 
-            // tbNazwa
-            // 
-            this.tbNazwa.Location = new System.Drawing.Point(194, 145);
-            this.tbNazwa.Name = "tbNazwa";
-            this.tbNazwa.Size = new System.Drawing.Size(57, 20);
-            this.tbNazwa.TabIndex = 12;
-            this.tbNazwa.Text = "nazwa";
-            // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(254, 149);
+            this.label5.Location = new System.Drawing.Point(144, 149);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(36, 13);
+            this.label5.Size = new System.Drawing.Size(141, 13);
             this.label5.TabIndex = 13;
-            this.label5.Text = "like \'%";
+            this.label5.Text = "and nazwa wyrobiska like \'%";
             // 
             // tbLike
             // 
@@ -248,7 +231,7 @@
             // labelZatwierdzone
             // 
             this.labelZatwierdzone.AutoSize = true;
-            this.labelZatwierdzone.Location = new System.Drawing.Point(12, 148);
+            this.labelZatwierdzone.Location = new System.Drawing.Point(12, 149);
             this.labelZatwierdzone.Name = "labelZatwierdzone";
             this.labelZatwierdzone.Size = new System.Drawing.Size(81, 13);
             this.labelZatwierdzone.TabIndex = 17;
@@ -339,9 +322,7 @@
             this.Controls.Add(this.label6);
             this.Controls.Add(this.tbLike);
             this.Controls.Add(this.label5);
-            this.Controls.Add(this.tbNazwa);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.labelWhereAnd);
             this.Controls.Add(this.remainingRowsLabel);
             this.Controls.Add(this.loadNextButton);
             this.Controls.Add(this.label2);
@@ -377,9 +358,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button loadNextButton;
         private System.Windows.Forms.Label remainingRowsLabel;
-        private System.Windows.Forms.Label labelWhereAnd;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox tbNazwa;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox tbLike;
         private System.Windows.Forms.Label label6;

@@ -12,6 +12,7 @@ using System.Diagnostics;
 using MapInterfaceObjects;
 using InterProcessCommunication;
 using System.Xml.Linq;
+using System.IO;
 
 namespace DataBaseEditor
 {
@@ -54,31 +55,70 @@ namespace DataBaseEditor
         {
             if(this.appType == ApplicationType.insert)
             {
+                tbSqlQuery.Text = getQueryFromTxtFile();
                 tsWyswietlOryginalne.Visible = false;
                 labelZatwierdzone.Visible = false;
                 cbOryginalneCzyZmienione.Visible = false;
                 cbZatwierdzone.Visible = false;
+                tbLike.Enabled = false;
             }
             else if (this.appType == ApplicationType.update)
             {
-                tbSqlQuery.Text = @"Select Wyrobiska.id_wyrobiska, Wyrobiska.nazwa, Wyrobiska.typWyrob, Wyrobiska.id_poziomu, Wyrobiska.id_pokladu, WyrobiskaLinieCentralne.zatwierdzone
+                //TODO kwerendę zmienić po zmianie bazy danych i struktury
+                tbSqlQuery.Text = @"Select Wyrobiska.id_wyrobiska, Wyrobiska.nazwa as nazwaWyrobiska, Wyrobiska.typWyrob, Wyrobiska.id_poziomu, Wyrobiska.id_pokladu, WyrobiskaLinieCentralne.zatwierdzone
 	                                 from WyrobiskaLinieCentralne
                                     inner join Wyrobiska on WyrobiskaLinieCentralne.id_wyrobiska = Wyrobiska.id_wyrobiska 
                                     where WyrobiskaLinieCentralne.zatwierdzone = ";
                 tbSqlQuery.ReadOnly = true;
                 cbZatwierdzone.SelectedIndex = 0;
-                labelWhereAnd.Text = "and";
                 cbOryginalneCzyZmienione.SelectedIndex = 0;
-                sqlQueryTextBox_TextChangedEvent(null, null);
             }                
+            sqlQueryTextBox_TextChangedEvent(null, null);
         }
 
         private void DBEditorMainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             MapTools mt = new MapTools(Program.platformaGraficzna);
             mt.unloadAddin();
+            saveQueryToTxtFile();
         }
 
+        #region zapisywanie kwerendy sql do pliku tekstowego i czytanie z pliku
+
+        private string getQueryFromTxtFile()
+        {
+            string txt = "";
+            try
+            {
+                txt = File.ReadAllText("kwerenda.txt");
+            }
+            catch (Exception e)
+            {
+                //TODO kwerendę zmienić po zmianie bazy danych i struktury
+                MessageBox.Show("błąd odczytu ustawień z pliku kwerenda.txt " + e.Message + e.StackTrace);
+                txt = @"SELECT id_wyrobiska,Wyrobiska.nazwa as nazwaWyrobiska,RodzajeWyrobisk.nazwa as rodzajWyrobiska,id_poziomu,id_pokladu FROM Wyrobiska
+                                    inner join RodzajeWyrobisk on RodzajeWyrobisk.id_rodzaju = Wyrobiska.id_rodzaju
+                                    where id_wyrobiska not in (select id_wyrobiska from WyrobiskaLinieCentralne) ";
+            }
+            return txt;
+        }
+
+        private void saveQueryToTxtFile()
+        {
+            string textToSave = tbSqlQuery.Text;
+            string fileName = "kwerenda.txt";
+            try
+            {
+                File.WriteAllText(fileName, textToSave);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("błąd zapisu ustawień do pliku  " + fileName + "   " + e.Message + e.StackTrace);
+            }
+        }
+
+
+        #endregion
 
         #region Region - zdarzenia na interakcję z użytkownikiem
 
@@ -144,12 +184,14 @@ namespace DataBaseEditor
 
         private string constructQueryConditionSection(string queryPart1)
         {
+            if (this.appType == ApplicationType.insert)
+                return "";
             if (!String.IsNullOrEmpty(tbLike.Text))
             {
                 if (queryPart1.ToLower().Contains("where"))
-                    return " and " + tbNazwa.Text + " like '%" + tbLike.Text + "%' ";
+                    return " and Wyrobiska.nazwa like '%" + tbLike.Text + "%' ";
                 else
-                    return " where " + tbNazwa.Text + " like '%" + tbLike.Text + "%' ";
+                    return " where Wyrobiska.nazwa like '%" + tbLike.Text + "%' ";
             }
             return "";
         }
@@ -209,7 +251,7 @@ namespace DataBaseEditor
 
         private void PomocToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string pomoc = @"        (1) wpisać kwerendę ( na przykład: SELECT [id_wyrobiska],[nazwa],[typWyrob],[id_poziomu],[id_pokladu] FROM [Wyrobiska] ) i żądany warunek 
+            string pomoc = @"        (1) wpisać kwerendę; pierwsze pole musi być id_wyrobiska
         (2) wyświetlić dane w datagridzie
         (3) uruchomić moduł graficzny
         (4) zaznaczyć żądany wiersz w datagridzie
@@ -219,17 +261,18 @@ namespace DataBaseEditor
         (8) przycisk informacja otwiera okno informacji i wyświetla info o wyrobisku wczytanym do bazy (trzeba zaznaczyć żądaną zieloną linię)";
 
             if (this.appType == ApplicationType.update)
-                pomoc = @"        (1) pole kwerendy jest już wypełnione, nie można edytować, można wpisać warunek
+                pomoc = @"        (1) pole kwerendy jest już wypełnione, nie można edytować, można wpisać warunek nazwy wyrobiska
         (2) wyświetlić dane w datagridzie przyciskiem „Wyświetl” po prawej
         (3) uruchomić moduł graficzny przyciskiem na pasku górnym
         (4) wyświetlić wyrobiska na mapie (wyświetla te, które są widoczne w datagridzie) przyciskiem na pasku górnym; w zależności od wyboru opcji „zatwierdzone”,  wyświetlane są linie zmodyfikowane bądź oryginalne
         (5) zaznaczyć żądaną linię wyświetloną z bazy danych, nacisnąć przycisk Informacja, co wyświetla nazwę wyrobiska i id
-        (6) wpisać żądane wartości offsetów; wartości offsetów są ograniczone do +-10 metrów, pozostawienie pól pustych oznacza 0.
-        (7) w razie potrzeby odwrócić kierunek biegu linii; UWAGA: offsety liczone są w stosunku do oryginalnych punktów początku i końca!
-        (8) kliknąć Zatwierdź
-        (9) na mapie wyświetlana jest na zielono zatwierdzona linia; jeżeli wpisane były jakieś offsety, długość linii jest różna od linii oryginalnej; 0 oznacza start a 1 koniec linii
-        (10) z datagrida znika wyrobisko zatwierdzone; uzyskuje ono status zatwierdzone=1, więc w razie potrzeby można je ponownie wczytać do datagrida wybierając 1 z listy wyboru w warunku w oknie głównym
-        (11) jeżeli wyrobisko jest źle przypisane (tj. ta linia centralna nie odpowiada wyrobisku o tej nazwie) można je usunąć z bazy danych przyciskiem Usuń";
+        (6) zatwierdzić wybór klikając ppm w Microstation, co pokazuje kierunek przebiegu wyrobiska
+        (7) wpisać żądane wartości offsetów; wartości offsetów są ograniczone do +-10 metrów, pozostawienie pól pustych oznacza 0.
+        (8) w razie potrzeby odwrócić kierunek biegu linii; UWAGA: offsety liczone są w stosunku do oryginalnych punktów początku i końca!
+        (9) kliknąć Zatwierdź
+        (10) na mapie wyświetlana jest na zielono zatwierdzona linia; jeżeli wpisane były jakieś offsety, długość linii jest różna od linii oryginalnej; 0 oznacza start a 1 koniec linii
+        (11) z datagrida znika wyrobisko zatwierdzone; uzyskuje ono status zatwierdzone=1, więc w razie potrzeby można je ponownie wczytać do datagrida wybierając 1 z listy wyboru w warunku w oknie głównym
+        (12) jeżeli wyrobisko jest źle przypisane (tj. ta linia centralna nie odpowiada wyrobisku o tej nazwie) można je usunąć z bazy danych przyciskiem Usuń";
 
             MyMessageBox.display(pomoc, MessageBoxType.Information);
         }
@@ -294,6 +337,8 @@ namespace DataBaseEditor
 
             DBReader reader = new DBReader(dbConnection);
             queryData = reader.readFromDB(this.sqlQueryForDisplayInDatagrid);
+            if (queryData == null)
+                return;
 
             //jeżeli kwerenda błędna to nie zwróci wyników
             //przypadki błędnej kwerendy obsługiwane są przez DBReader
@@ -544,10 +589,12 @@ namespace DataBaseEditor
 
         private void dataGridView1_RowHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
+            if (this.appType == ApplicationType.update)
+                return;
             try
             {
                 int selectedRow = dataGridView1.SelectedRows[0].Index;
-                int columnNazwaIndex = dataGridView1.Columns["nazwa"].Index;
+                int columnNazwaIndex = dataGridView1.Columns["nazwaWyrobiska"].Index;
                 int columnIDIndex = dataGridView1.Columns["id_wyrobiska"].Index;
                 string idWyrobiska = dataGridView1.Rows[selectedRow].Cells[columnIDIndex].Value.ToString();
                 string nazwaWyrobiska = dataGridView1.Rows[selectedRow].Cells[columnNazwaIndex].Value.ToString();
@@ -559,7 +606,7 @@ namespace DataBaseEditor
             }
             catch (NullReferenceException exe)
             {
-                MessageBox.Show("Błąd kwerendy. Wynik kwerendy musi zawierać pola 'id_wyrobiska' i 'nazwa'");
+                MessageBox.Show("Błąd kwerendy. Wynik kwerendy musi zawierać pola 'id_wyrobiska' i 'nazwaWyrobiska'");
             }
         }
 
