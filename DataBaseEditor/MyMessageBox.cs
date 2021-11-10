@@ -35,7 +35,7 @@ namespace DataBaseEditor
         private int maxTextBoxWidth = 800;           //maksymalna szerokość pola tekstowego, jeżeli nie określę to rośnie w nieskończoność gdy wiadomość jest jedną linią
         private int textPadding = 30;               //odległość tekstu w textboxie od krawędzi tekstboxu, używam obliczając wysokość tekstboxa gdy występują długie linie
 
-        public MyMessageBox(string message, MessageBoxType mbType)
+        private MyMessageBox(string message, MessageBoxType mbType)
         {
             InitializeComponent();
             this.message = message;

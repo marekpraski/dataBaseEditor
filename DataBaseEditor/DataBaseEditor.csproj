@@ -120,6 +120,10 @@
       <Project>{6720be48-852b-4e2e-adf2-057928fce566}</Project>
       <Name>MapInterface</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\UtilityTools\UtilityTools\UtilityTools.csproj">
+      <Project>{958e338d-e246-40fb-b1c4-8b362756bbb5}</Project>
+      <Name>UtilityTools</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\PokazMape_23x23.png" />

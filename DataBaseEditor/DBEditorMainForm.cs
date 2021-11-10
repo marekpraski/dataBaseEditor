@@ -13,6 +13,7 @@ using MapInterfaceObjects;
 using InterProcessCommunication;
 using System.Xml.Linq;
 using System.IO;
+using UtilityTools;
 
 namespace DataBaseEditor
 {
@@ -51,6 +52,7 @@ namespace DataBaseEditor
             initialSettings();
         }
 
+        #region zdarzenia podczas uruchamiania i zamykania okna
         private void initialSettings()
         {
             if(this.appType == ApplicationType.insert)
@@ -65,9 +67,9 @@ namespace DataBaseEditor
             else if (this.appType == ApplicationType.update)
             {
                 //TODO kwerendę zmienić po zmianie bazy danych i struktury
-                tbSqlQuery.Text = @"Select Wyrobiska.id_wyrobiska, Wyrobiska.nazwa as nazwaWyrobiska, Wyrobiska.typWyrob, Wyrobiska.id_poziomu, Wyrobiska.id_pokladu, WyrobiskaLinieCentralne.zatwierdzone
+                tbSqlQuery.Text = @"Select MaincoalWyrobiska.id_wyrobiska, MaincoalWyrobiska.nazwaWyrobiska, MaincoalWyrobiska.rodzajWyrobiska, MaincoalWyrobiska.id_poziomu, MaincoalWyrobiska.id_pokladu, WyrobiskaLinieCentralne.zatwierdzone
 	                                 from WyrobiskaLinieCentralne
-                                    inner join Wyrobiska on WyrobiskaLinieCentralne.id_wyrobiska = Wyrobiska.id_wyrobiska 
+                                    inner join MaincoalWyrobiska on WyrobiskaLinieCentralne.id_wyrobiska = MaincoalWyrobiska.id_wyrobiska 
                                     where WyrobiskaLinieCentralne.zatwierdzone = ";
                 tbSqlQuery.ReadOnly = true;
                 cbZatwierdzone.SelectedIndex = 0;
@@ -80,8 +82,11 @@ namespace DataBaseEditor
         {
             MapTools mt = new MapTools(Program.platformaGraficzna);
             mt.unloadAddin();
-            saveQueryToTxtFile();
+            if(this.appType == ApplicationType.insert)
+                saveQueryToTxtFile();
         }
+
+        #endregion
 
         #region zapisywanie kwerendy sql do pliku tekstowego i czytanie z pliku
 
@@ -96,9 +101,7 @@ namespace DataBaseEditor
             {
                 //TODO kwerendę zmienić po zmianie bazy danych i struktury
                 MessageBox.Show("błąd odczytu ustawień z pliku kwerenda.txt " + e.Message + e.StackTrace);
-                txt = @"SELECT id_wyrobiska,Wyrobiska.nazwa as nazwaWyrobiska,RodzajeWyrobisk.nazwa as rodzajWyrobiska,id_poziomu,id_pokladu FROM Wyrobiska
-                                    inner join RodzajeWyrobisk on RodzajeWyrobisk.id_rodzaju = Wyrobiska.id_rodzaju
-                                    where id_wyrobiska not in (select id_wyrobiska from WyrobiskaLinieCentralne) ";
+                txt = @"SELECT * FROM MaincoalWyrobiska  where id_wyrobiska not in (select id_wyrobiska from WyrobiskaLinieCentralne)";
             }
             return txt;
         }
@@ -120,14 +123,20 @@ namespace DataBaseEditor
 
         #endregion
 
-        #region Region - zdarzenia na interakcję z użytkownikiem
+        #region zdarzenia na interakcję z użytkownikiem
 
         private void cbZatwierdzone_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cbZatwierdzone.SelectedIndex == 0)
+            {
                 cbOryginalneCzyZmienione.SelectedIndex = 0;
+                cbOryginalneCzyZmienione.Enabled = false;
+            }
             else
+            {
                 cbOryginalneCzyZmienione.SelectedIndex = 1;
+                cbOryginalneCzyZmienione.Enabled = true;
+            }
         }
 
         //button, którego kliknięcie wypełnia danymi z kwerendy główny datagrid
@@ -145,6 +154,8 @@ namespace DataBaseEditor
                 tableName = connector.getTableNameFromQuery(this.sqlQueryForDisplayInDatagrid);
                 dbConnection = connector.getDBConnection(ConnectionDataSource.serverAndDatabaseNamesInFile, ConnectionTypes.sqlAuthorisation);
 
+                if (dbConnection == null)
+                    return;
                 if (dg1Handler.checkChangesExist())
                 {
                     if (MyMessageBox.display("Czy zapisać zmiany?", MessageBoxType.YesNo) == MessageBoxResults.Yes)
