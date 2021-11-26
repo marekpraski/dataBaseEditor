@@ -21,7 +21,7 @@ namespace DataBaseEditor
     {
         private enum ApplicationType { insert, update}
 
-        private ApplicationType appType = ApplicationType.update;       //ustawić odpowiednio dla kompilacji dla PRGW (insert) lub Bogdanka (update)
+        private ApplicationType appType = ApplicationType.insert;       //ustawić odpowiednio dla kompilacji dla PRGW (insert) lub Bogdanka (update)
 
         private DataGridHandler dg1Handler;
         private FormFormatter formatter;
@@ -67,7 +67,7 @@ namespace DataBaseEditor
             else if (this.appType == ApplicationType.update)
             {
                 //TODO kwerendę zmienić po zmianie bazy danych i struktury
-                tbSqlQuery.Text = @"Select MaincoalWyrobiska.id_wyrobiska, MaincoalWyrobiska.nazwaWyrobiska, MaincoalWyrobiska.rodzajWyrobiska, MaincoalWyrobiska.id_poziomu, MaincoalWyrobiska.id_pokladu, WyrobiskaLinieCentralne.zatwierdzone
+                tbSqlQuery.Text = @"Select MaincoalWyrobiska.id_wyrobiska, MaincoalWyrobiska.nazwaWyrobiska,WyrobiskaLinieCentralne.odcinekNumer, MaincoalWyrobiska.rodzajWyrobiska, MaincoalWyrobiska.id_poziomu, MaincoalWyrobiska.id_pokladu, WyrobiskaLinieCentralne.zatwierdzone
 	                                 from WyrobiskaLinieCentralne
                                     inner join MaincoalWyrobiska on WyrobiskaLinieCentralne.id_wyrobiska = MaincoalWyrobiska.id_wyrobiska 
                                     where WyrobiskaLinieCentralne.zatwierdzone = ";
@@ -232,7 +232,6 @@ namespace DataBaseEditor
                 saveButton.Enabled = false;
             }
         }
-
 
         private void saveButton_Click(object sender, EventArgs e)
         {
@@ -638,27 +637,61 @@ namespace DataBaseEditor
                 return;
             }
 
-            KeyinParameters kp = new KeyinParameters() { displayParams = getDisplayParams(), queryParams = getQueryParams(), typObiektu = TypObiektuMapy.LiniaCentralnaWyrobiska };
-            ipcSender.sendMessage(kp.toXmlString(), SenderFunction.DisplayObjectsOnMap);
+            IEnumerable<IElementGraficzny> elems = getElementsToDisplay();
+            ipcSender.sendElementyGraficzne(elems, SenderFunction.DisplayReceivedObjectsOnMap);
         }
 
-        private QueryInputParams getQueryParams()
+        private IEnumerable<IElementGraficzny> getElementsToDisplay()
         {
-            string textGeometryColumn = cbOryginalneCzyZmienione.SelectedIndex == 0 ? "geometriaPunktStart" : "geometriaPunktStartZmodyf";
-            string linestringGeometryColumn = cbOryginalneCzyZmienione.SelectedIndex == 0 ? "geometriaLiniiCentralnej" : "geometriaZmodyfikowanejLiniiCentralnej";
-            QueryInputParams qd = new QueryInputParams()
-            {
-                textTableName = this.tableName,
-                textIdentityColumn = "id_wyrobiska",
-                textGeometryColumn = textGeometryColumn,
-                textColumn = "znacznikPunktStart",
-                linestringTableName = this.tableName,
-                linestringIdentityColumn = "id_wyrobiska",
-                linestringGeometryColumn = linestringGeometryColumn,
-                selectCondition = extractQueryCondition(this.sqlQueryForDisplayInDatagrid)
-            };
-            return qd;
+            QueryData liniaCentralnaQueryData = getLinestringData();
+            MapObjectsTools tools = new MapObjectsTools(this.dbConnection);
+            List<IElementGraficzny> elems = tools.getLinestringsFromSqlData(liniaCentralnaQueryData, (int)TypObiektuMapy.LiniaCentralnaWyrobiska);
+            modifyDblinks(elems, liniaCentralnaQueryData);
+            return elems;
         }
+
+        private void modifyDblinks(List<IElementGraficzny> elems, QueryData liniaCentralnaQueryData)
+        {
+            for (int i = 0; i < elems.Count; i++)
+            {
+                DBLink link = elems[i].dbLink;
+                link.elementId = getUniqueIdOdcinka(liniaCentralnaQueryData, link.elementId);
+            }
+        }
+
+        private int getUniqueIdOdcinka(QueryData liniaCentralnaQueryData, int elementId)
+        {
+            return getUniqueIdOdcinkaFromDataRow(liniaCentralnaQueryData, getDataRowIndexOdcinka(liniaCentralnaQueryData, elementId));
+        }
+
+        private int getDataRowIndexOdcinka(QueryData liniaCentralnaQueryData, int elementId)
+        {
+            for (int i = 0; i < liniaCentralnaQueryData.dataRowsNumber; i++)
+            {
+                int id = Convert.ToInt32(liniaCentralnaQueryData.getDataValue(i, "id"));
+                if (elementId == id)
+                    return i;
+            }
+            return 0;
+        }
+
+        private int getUniqueIdOdcinkaFromDataRow(QueryData liniaCentralnaQueryData, int rowIndex)
+        {
+            OdcinekLiniiCentralnej odcinek = new OdcinekLiniiCentralnej()
+            {
+                idWyrobiska = liniaCentralnaQueryData.getDataValue(rowIndex, "id_wyrobiska").ToString(),
+                numerKolejny = Convert.ToInt32(liniaCentralnaQueryData.getDataValue(rowIndex, "odcinekNumer"))
+            };
+            return odcinek.uniqueId;
+        }
+
+        private QueryData getLinestringData()
+        {
+            string query = "select geometriaLiniiCentralnej as geometryString, idLinieCentralne as id, id_wyrobiska, odcinekNumer FROM WyrobiskaLinieCentralne " + extractQueryCondition(this.sqlQueryForDisplayInDatagrid);
+            DBReader reader = new DBReader(this.dbConnection);
+            return reader.readFromDB(query);
+        }
+
 
         private string extractQueryCondition(string sqlQuery)
         {

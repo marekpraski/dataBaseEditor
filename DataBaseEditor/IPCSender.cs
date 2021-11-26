@@ -30,6 +30,11 @@ namespace DataBaseEditor
             return ipcHandler.sendIserializables(serializables, IPCAppType.MAIN, senderFunction);
         }
 
+        public bool sendElementyGraficzne(IEnumerable<IElementGraficzny> elementyGraficzne, SenderFunction senderFunction)
+        {
+            return ipcHandler.sendElementyGraficzne(elementyGraficzne, IPCAppType.MAIN, senderFunction);
+        }
+
         public bool sendConnectionData(DBConnectionData connectionData)
         {
             byte[] bytes = connectionData.toByteArray();
