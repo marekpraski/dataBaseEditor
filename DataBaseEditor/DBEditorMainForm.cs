@@ -22,7 +22,7 @@ namespace DataBaseEditor
         private enum ApplicationType { insert, update}
 
         private ApplicationType appType = ApplicationType.insert;       //ustawić odpowiednio dla kompilacji dla PRGW (insert) lub Bogdanka (update)
-
+        private UtilityTools.NumberHandler numberHandler = new UtilityTools.NumberHandler();
         private DataGridHandler dg1Handler;
         private FormFormatter formatter;
         private DataGridCell changedCell;
@@ -32,6 +32,7 @@ namespace DataBaseEditor
         private QueryData queryData;
         private SqlConnection dbConnection;
         private string tableName = "";
+        private readonly string displayLevelNameUpdate = "linieCentralneMapaObiektowa";
 
         private List<object[]> dbData;
 
@@ -50,6 +51,7 @@ namespace DataBaseEditor
             dg1Handler = new DataGridHandler();  //każdy datagrid musi mieć swoją instancję DataGridHandlera
             formatter = new FormFormatter();
             initialSettings();
+            populateComboKolor();
         }
 
         #region zdarzenia podczas uruchamiania i zamykania okna
@@ -67,7 +69,7 @@ namespace DataBaseEditor
             else if (this.appType == ApplicationType.update)
             {
                 //TODO kwerendę zmienić po zmianie bazy danych i struktury
-                tbSqlQuery.Text = @"Select MaincoalWyrobiska.id_wyrobiska, MaincoalWyrobiska.nazwaWyrobiska,WyrobiskaLinieCentralne.odcinekNumer, MaincoalWyrobiska.rodzajWyrobiska, MaincoalWyrobiska.id_poziomu, MaincoalWyrobiska.id_pokladu, WyrobiskaLinieCentralne.zatwierdzone
+                tbSqlQuery.Text = @"Select WyrobiskaLinieCentralne.idLinieCentralne, MaincoalWyrobiska.id_wyrobiska, MaincoalWyrobiska.nazwaWyrobiska,WyrobiskaLinieCentralne.odcinekNumer, MaincoalWyrobiska.rodzajWyrobiska, MaincoalWyrobiska.id_poziomu, MaincoalWyrobiska.id_pokladu, WyrobiskaLinieCentralne.zatwierdzone
 	                                 from WyrobiskaLinieCentralne
                                     inner join MaincoalWyrobiska on WyrobiskaLinieCentralne.id_wyrobiska = MaincoalWyrobiska.id_wyrobiska 
                                     where WyrobiskaLinieCentralne.zatwierdzone = ";
@@ -76,6 +78,24 @@ namespace DataBaseEditor
                 cbOryginalneCzyZmienione.SelectedIndex = 0;
             }                
             sqlQueryTextBox_TextChangedEvent(null, null);
+        }
+
+        private void populateComboKolor()
+        {
+            ComboboxItem[] comboItems = new ComboboxItem[8];
+            comboItems[0] = new ComboboxItem("czerwony", -16776961);
+            comboItems[1] = new ComboboxItem("zielony", -16711936);
+            comboItems[2] = new ComboboxItem("żółty", -16711681);
+            comboItems[3] = new ComboboxItem("jasnoniebieski", -256);
+            comboItems[4] = new ComboboxItem("ciemny niebieski", -65536);
+            comboItems[5] = new ComboboxItem("różowy", -65281);
+            comboItems[6] = new ComboboxItem("brąz-pomarańcza", -16744193);
+            comboItems[7] = new ComboboxItem("fioletowy", -65408);
+
+            cbKolor.ComboBox.DataSource = comboItems;
+            cbKolor.ComboBox.DisplayMember = "displayText";
+            cbKolor.ComboBox.ValueMember = "value";
+            cbKolor.SelectedIndex = 0;
         }
 
         private void DBEditorMainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -638,7 +658,26 @@ namespace DataBaseEditor
             }
 
             IEnumerable<IElementGraficzny> elems = getElementsToDisplay();
-            ipcSender.sendElementyGraficzne(elems, SenderFunction.DisplayReceivedObjectsOnMap);
+            ipcSender.sendElementyGraficzne(elems, getDisplayParams().getDisplayParametersAsXml().ToString(), SenderFunction.DisplayReceivedObjectsOnMap);
+        }
+
+        private DisplayParams getDisplayParams()
+        {
+            return new DisplayParams()
+            {
+                CADColourAsInt = getColourFromCombo(),
+                levelName = displayLevelNameUpdate,
+                lineThickness = 1,
+                lineStyleName = "0",
+                clearLevelBeforeDisplay = cbFituj.Checked,
+                focusLevelAfterDisplay = cbFituj.Checked
+            };
+        }
+
+        private int getColourFromCombo()
+        {
+            ComboboxItem selectedItem = cbKolor.SelectedItem as ComboboxItem;
+            return numberHandler.tryGetInt(selectedItem.value);
         }
 
         private IEnumerable<IElementGraficzny> getElementsToDisplay()
@@ -718,21 +757,9 @@ namespace DataBaseEditor
             List<string> ids = new List<string>();
             foreach (DataGridViewRow row in this.dataGridView1.SelectedRows)
             {
-                ids.Add(row.Cells[0].Value.ToString());
+                ids.Add(row.Cells["id_wyrobiska"].Value.ToString());
             }
             return String.Join(",", ids);
-        }
-
-
-        private DisplayParams getDisplayParams()
-        {
-            return new DisplayParams()
-            {
-                CADColourAsInt = -16776961,   //czerwony w RGB
-                levelName = "osieWyrobiskWBazie",
-                lineThickness = 0,
-                lineStyleName = "0"
-            };
         }
 
         #endregion

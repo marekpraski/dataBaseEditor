@@ -57,6 +57,8 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tsWyswietlOryginalne = new System.Windows.Forms.ToolStripButton();
             this.cbOryginalneCzyZmienione = new System.Windows.Forms.ToolStripComboBox();
+            this.cbKolor = new System.Windows.Forms.ToolStripComboBox();
+            this.cbFituj = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -257,7 +259,8 @@
             this.tsUruchomModulGraficzny,
             this.toolStripSeparator1,
             this.tsWyswietlOryginalne,
-            this.cbOryginalneCzyZmienione});
+            this.cbOryginalneCzyZmienione,
+            this.cbKolor});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(553, 25);
@@ -310,11 +313,27 @@
             this.cbOryginalneCzyZmienione.Name = "cbOryginalneCzyZmienione";
             this.cbOryginalneCzyZmienione.Size = new System.Drawing.Size(100, 25);
             // 
+            // cbKolor
+            // 
+            this.cbKolor.Name = "cbKolor";
+            this.cbKolor.Size = new System.Drawing.Size(121, 25);
+            // 
+            // cbFituj
+            // 
+            this.cbFituj.AutoSize = true;
+            this.cbFituj.Location = new System.Drawing.Point(316, 8);
+            this.cbFituj.Name = "cbFituj";
+            this.cbFituj.Size = new System.Drawing.Size(132, 17);
+            this.cbFituj.TabIndex = 21;
+            this.cbFituj.Text = "usuń poprzednie i zbliż";
+            this.cbFituj.UseVisualStyleBackColor = true;
+            // 
             // DBEditorMainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(553, 640);
+            this.Controls.Add(this.cbFituj);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.cbZatwierdzone);
             this.Controls.Add(this.labelZatwierdzone);
@@ -372,6 +391,8 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton tsWyswietlOryginalne;
         private System.Windows.Forms.ToolStripComboBox cbOryginalneCzyZmienione;
+        private System.Windows.Forms.ToolStripComboBox cbKolor;
+        private System.Windows.Forms.CheckBox cbFituj;
     }
 }
 
