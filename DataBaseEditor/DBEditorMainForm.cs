@@ -194,44 +194,7 @@ namespace DataBaseEditor
                     setUpDatagrid();
                 }
             }
-        }
-
-        private string constructQueryForDisplayInDatagrid()
-        {
-            string queryPart1 = constructMainQueryBody();
-            string queryPart2 = constructQueryConditionSection(queryPart1);
-            string queryPart3 = constructOrderByQuerySection();
-            return queryPart1 + queryPart2 + queryPart3;
-        }
-
-        private string constructMainQueryBody()
-        {
-            string query = tbSqlQuery.Text;
-            if (this.appType == ApplicationType.update)
-                query += cbZatwierdzone.Text;
-
-            return query;
-        }
-
-        private string constructQueryConditionSection(string queryPart1)
-        {
-            if (this.appType == ApplicationType.insert)
-                return "";
-            if (!String.IsNullOrEmpty(tbLike.Text))
-            {
-                if (queryPart1.ToLower().Contains("where"))
-                    return " and Wyrobiska.nazwa like '%" + tbLike.Text + "%' ";
-                else
-                    return " where Wyrobiska.nazwa like '%" + tbLike.Text + "%' ";
-            }
-            return "";
-        }
-
-        private string constructOrderByQuerySection()
-        {
-            if (!String.IsNullOrEmpty(tbOrderBy.Text))
-                return " order by " + tbOrderBy.Text;
-            return "";
+            tbLike.Text = "";   //jeżeli nie wyczyszczę, to przy próbie wyświetlenia na mapie wyrobisk zaznaczonych w datagridzie tworzy kwerendę, która nie przechodzi i wywala błąd
         }
 
         private void UndoButton_Click(object sender, EventArgs e)
@@ -320,7 +283,7 @@ namespace DataBaseEditor
                 btnWyswietl.Enabled = false;
             }
         }
- 
+
 
         private void dataGridView1_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
@@ -352,6 +315,48 @@ namespace DataBaseEditor
             {
                 dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = changedCell.getCellValue(cellValueTypes.oldValue);
             }
+        }
+
+        #endregion
+
+        #region tworzenie kwerendy do wyświetlania danych w datagridzie
+
+        private string constructQueryForDisplayInDatagrid()
+        {
+            string queryPart1 = constructMainQueryBody();
+            string queryPart2 = constructQueryConditionSection(queryPart1);
+            string queryPart3 = constructOrderByQuerySection();
+            return queryPart1 + queryPart2 + queryPart3;
+        }
+
+        private string constructMainQueryBody()
+        {
+            string query = tbSqlQuery.Text;
+            if (this.appType == ApplicationType.update)
+                query += cbZatwierdzone.Text;
+
+            return query;
+        }
+
+        private string constructQueryConditionSection(string queryPart1)
+        {
+            if (this.appType == ApplicationType.insert)
+                return "";
+            if (!String.IsNullOrEmpty(tbLike.Text))
+            {
+                if (queryPart1.ToLower().Contains("where"))
+                    return " and MaincoalWyrobiska.nazwaWyrobiska like '%" + tbLike.Text + "%' ";
+                else
+                    return " where MaincoalWyrobiska.nazwaWyrobiska like '%" + tbLike.Text + "%' ";
+            }
+            return "";
+        }
+
+        private string constructOrderByQuerySection()
+        {
+            if (!String.IsNullOrEmpty(tbOrderBy.Text))
+                return " order by " + tbOrderBy.Text;
+            return "";
         }
 
         #endregion
@@ -726,30 +731,15 @@ namespace DataBaseEditor
 
         private QueryData getLinestringData()
         {
-            string query = "select geometriaLiniiCentralnej as geometryString, idLinieCentralne as id, id_wyrobiska, odcinekNumer FROM WyrobiskaLinieCentralne " + extractQueryCondition(this.sqlQueryForDisplayInDatagrid);
+            string query = "select geometriaLiniiCentralnej as geometryString, idLinieCentralne as id, id_wyrobiska, odcinekNumer FROM WyrobiskaLinieCentralne " + getQueryCondition();
             DBReader reader = new DBReader(this.dbConnection);
             return reader.readFromDB(query);
         }
 
-
-        private string extractQueryCondition(string sqlQuery)
+        private string getQueryCondition()
         {
-            if (!sqlQuery.ToLower().Contains("where"))
-                return "";
-
-            int startIndex = sqlQuery.ToLower().IndexOf("where");
-            int substringLength = sqlQuery.Length - startIndex;
-            if (sqlQuery.ToLower().Contains("order by"))
-                substringLength = sqlQuery.ToLower().IndexOf("order by") - startIndex;
-
-            string whereCondition = sqlQuery.Substring(startIndex, substringLength);
-            return appendWhereCondition(whereCondition);
-        }
-
-        private string appendWhereCondition(string whereCondition)
-        {
-            string newWhereCondition = whereCondition + " and WyrobiskaLinieCentralne.id_wyrobiska in (@idZaznaczonychWyrobisk)";
-            return newWhereCondition.Replace("@idZaznaczonychWyrobisk", getIdsOfSelectedWyrobiska());
+            string whereCondition = " where WyrobiskaLinieCentralne.id_wyrobiska in (@idZaznaczonychWyrobisk)";
+            return whereCondition.Replace("@idZaznaczonychWyrobisk", getIdsOfSelectedWyrobiska());
         }
 
         private string getIdsOfSelectedWyrobiska()
@@ -763,7 +753,6 @@ namespace DataBaseEditor
         }
 
         #endregion
-
 
     }
 }
