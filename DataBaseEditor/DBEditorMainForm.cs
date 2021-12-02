@@ -62,7 +62,6 @@ namespace DataBaseEditor
                 tbSqlQuery.Text = getQueryFromTxtFile();
                 tsWyswietlOryginalne.Visible = false;
                 labelZatwierdzone.Visible = false;
-                cbOryginalneCzyZmienione.Visible = false;
                 cbZatwierdzone.Visible = false;
                 tbLike.Enabled = false;
                 cbFituj.Visible = false;
@@ -79,7 +78,6 @@ namespace DataBaseEditor
                                     where WyrobiskaLinieCentralne.zatwierdzone =  ";
                 tbSqlQuery.ReadOnly = true;
                 cbZatwierdzone.SelectedIndex = 0;
-                cbOryginalneCzyZmienione.SelectedIndex = 0;
                 undoButton.Visible = true;
                 saveButton.Visible = true;
                 dataGridView1.EditMode = DataGridViewEditMode.EditOnKeystrokeOrF2;
@@ -154,19 +152,6 @@ namespace DataBaseEditor
 
         #region zdarzenia na interakcję z użytkownikiem
 
-        private void cbZatwierdzone_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (cbZatwierdzone.SelectedIndex == 0)
-            {
-                cbOryginalneCzyZmienione.SelectedIndex = 0;
-                cbOryginalneCzyZmienione.Enabled = false;
-            }
-            else
-            {
-                cbOryginalneCzyZmienione.SelectedIndex = 1;
-                cbOryginalneCzyZmienione.Enabled = true;
-            }
-        }
 
         //button, którego kliknięcie wypełnia danymi z kwerendy główny datagrid
         //jest to pierwszy przycisk, który użytkownik może nacisnąć po wpisaniu kwerendy w pole tekstowe
@@ -268,15 +253,13 @@ namespace DataBaseEditor
                 pomoc = @"        (1) pole kwerendy jest już wypełnione, nie można edytować, można wpisać warunek nazwy wyrobiska
         (2) wyświetlić dane w datagridzie przyciskiem „Wyświetl” po prawej
         (3) uruchomić moduł graficzny przyciskiem na pasku górnym
-        (4) wyświetlić wyrobiska na mapie (wyświetla te, które są widoczne w datagridzie) przyciskiem na pasku górnym; w zależności od wyboru opcji „zatwierdzone”,  wyświetlane są linie zmodyfikowane bądź oryginalne
+        (4) wyświetlić wyrobiska na mapie (wyświetla te, które są widoczne w datagridzie) przyciskiem na pasku górnym; 
         (5) zaznaczyć żądaną linię wyświetloną z bazy danych, nacisnąć przycisk Informacja, co wyświetla nazwę wyrobiska i id
         (6) zatwierdzić wybór klikając ppm w Microstation, co pokazuje kierunek przebiegu wyrobiska
-        (7) wpisać żądane wartości offsetów; wartości offsetów są ograniczone do +-10 metrów, pozostawienie pól pustych oznacza 0.
-        (8) w razie potrzeby odwrócić kierunek biegu linii; UWAGA: offsety liczone są w stosunku do oryginalnych punktów początku i końca!
-        (9) kliknąć Zatwierdź
-        (10) na mapie wyświetlana jest na zielono zatwierdzona linia; jeżeli wpisane były jakieś offsety, długość linii jest różna od linii oryginalnej; 0 oznacza start a 1 koniec linii
-        (11) z datagrida znika wyrobisko zatwierdzone; uzyskuje ono status zatwierdzone=1, więc w razie potrzeby można je ponownie wczytać do datagrida wybierając 1 z listy wyboru w warunku w oknie głównym
-        (12) jeżeli wyrobisko jest źle przypisane (tj. ta linia centralna nie odpowiada wyrobisku o tej nazwie) można je usunąć z bazy danych przyciskiem Usuń";
+        (7) w razie potrzeby odwrócić kierunek biegu linii; UWAGA:
+        (8) kliknąć Zatwierdź
+        (9) na mapie wyświetlana jest na zielono zatwierdzona linia; 0 oznacza start a 1 koniec linii
+        (10) z datagrida znika wyrobisko zatwierdzone; uzyskuje ono status zatwierdzone=1, więc w razie potrzeby można je ponownie wczytać do datagrida wybierając 1 z listy wyboru w warunku w oknie głównym";
 
             MyMessageBox.display(pomoc, MessageBoxType.Information);
         }

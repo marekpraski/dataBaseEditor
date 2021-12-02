@@ -56,7 +56,6 @@
             this.tsUruchomModulGraficzny = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tsWyswietlOryginalne = new System.Windows.Forms.ToolStripButton();
-            this.cbOryginalneCzyZmienione = new System.Windows.Forms.ToolStripComboBox();
             this.cbKolor = new System.Windows.Forms.ToolStripComboBox();
             this.cbFituj = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -250,7 +249,6 @@
             this.cbZatwierdzone.Name = "cbZatwierdzone";
             this.cbZatwierdzone.Size = new System.Drawing.Size(35, 21);
             this.cbZatwierdzone.TabIndex = 19;
-            this.cbZatwierdzone.SelectedIndexChanged += new System.EventHandler(this.cbZatwierdzone_SelectedIndexChanged);
             // 
             // toolStrip1
             // 
@@ -259,7 +257,6 @@
             this.tsUruchomModulGraficzny,
             this.toolStripSeparator1,
             this.tsWyswietlOryginalne,
-            this.cbOryginalneCzyZmienione,
             this.cbKolor});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
@@ -305,15 +302,6 @@
             this.tsWyswietlOryginalne.ToolTipText = "Wyświetl na mapie";
             this.tsWyswietlOryginalne.Click += new System.EventHandler(this.tsWyswietlNaMapie_Click);
             // 
-            // cbOryginalneCzyZmienione
-            // 
-            this.cbOryginalneCzyZmienione.Items.AddRange(new object[] {
-            "oryginalne",
-            "zmienione"});
-            this.cbOryginalneCzyZmienione.Name = "cbOryginalneCzyZmienione";
-            this.cbOryginalneCzyZmienione.Size = new System.Drawing.Size(100, 25);
-            this.cbOryginalneCzyZmienione.Visible = false;
-            // 
             // cbKolor
             // 
             this.cbKolor.Name = "cbKolor";
@@ -322,7 +310,7 @@
             // cbFituj
             // 
             this.cbFituj.AutoSize = true;
-            this.cbFituj.Location = new System.Drawing.Point(316, 8);
+            this.cbFituj.Location = new System.Drawing.Point(219, 6);
             this.cbFituj.Name = "cbFituj";
             this.cbFituj.Size = new System.Drawing.Size(132, 17);
             this.cbFituj.TabIndex = 21;
@@ -391,7 +379,6 @@
         private System.Windows.Forms.ToolStripButton tsUruchomModulGraficzny;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton tsWyswietlOryginalne;
-        private System.Windows.Forms.ToolStripComboBox cbOryginalneCzyZmienione;
         private System.Windows.Forms.ToolStripComboBox cbKolor;
         private System.Windows.Forms.CheckBox cbFituj;
     }
