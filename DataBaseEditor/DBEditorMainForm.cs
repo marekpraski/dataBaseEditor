@@ -21,7 +21,7 @@ namespace DataBaseEditor
     {
         private enum ApplicationType { insert, update}
 
-        private ApplicationType appType = ApplicationType.insert;       //ustawić odpowiednio dla kompilacji dla PRGW (insert) lub Bogdanka (update)
+        private ApplicationType appType = ApplicationType.update;       //ustawić odpowiednio dla kompilacji dla PRGW (insert) lub Bogdanka (update)
         private UtilityTools.NumberHandler numberHandler = new UtilityTools.NumberHandler();
         private DataGridHandler dg1Handler;
         private FormFormatter formatter;
@@ -65,17 +65,26 @@ namespace DataBaseEditor
                 cbOryginalneCzyZmienione.Visible = false;
                 cbZatwierdzone.Visible = false;
                 tbLike.Enabled = false;
+                cbFituj.Visible = false;
+                cbKolor.Visible = false;
             }
             else if (this.appType == ApplicationType.update)
             {
                 //TODO kwerendę zmienić po zmianie bazy danych i struktury
-                tbSqlQuery.Text = @"Select WyrobiskaLinieCentralne.idLinieCentralne, MaincoalWyrobiska.id_wyrobiska, MaincoalWyrobiska.nazwaWyrobiska,WyrobiskaLinieCentralne.odcinekNumer, MaincoalWyrobiska.rodzajWyrobiska, MaincoalWyrobiska.id_poziomu, MaincoalWyrobiska.id_pokladu, WyrobiskaLinieCentralne.zatwierdzone
+                tbSqlQuery.Text = @"Select WyrobiskaLinieCentralne.idLinieCentralne, MaincoalWyrobiska.id_wyrobiska,cast(WyrobiskaLinieCentralne.wyrobiskoNumerExcel as int) wyrobiskoNumerExcel, 
+                                    MaincoalWyrobiska.nazwaWyrobiska,WyrobiskaLinieCentralne.odcinekNumer,WyrobiskaLinieCentralne.odcinekMetrStart, WyrobiskaLinieCentralne.odcinekMetrKoniec, 
+                                    WyrobiskaLinieCentralne.wyrobiskoDlugoscExcel, MaincoalWyrobiska.rodzajWyrobiska, MaincoalWyrobiska.id_poziomu, MaincoalWyrobiska.id_pokladu, WyrobiskaLinieCentralne.zatwierdzone
 	                                 from WyrobiskaLinieCentralne
                                     inner join MaincoalWyrobiska on WyrobiskaLinieCentralne.id_wyrobiska = MaincoalWyrobiska.id_wyrobiska 
-                                    where WyrobiskaLinieCentralne.zatwierdzone = ";
+                                    where WyrobiskaLinieCentralne.zatwierdzone =  ";
                 tbSqlQuery.ReadOnly = true;
                 cbZatwierdzone.SelectedIndex = 0;
                 cbOryginalneCzyZmienione.SelectedIndex = 0;
+                undoButton.Visible = true;
+                saveButton.Visible = true;
+                dataGridView1.EditMode = DataGridViewEditMode.EditOnKeystrokeOrF2;
+                label4.Visible = false;
+                tbOrderBy.Visible = false;
             }                
             sqlQueryTextBox_TextChangedEvent(null, null);
         }
@@ -195,6 +204,8 @@ namespace DataBaseEditor
                 }
             }
             tbLike.Text = "";   //jeżeli nie wyczyszczę, to przy próbie wyświetlenia na mapie wyrobisk zaznaczonych w datagridzie tworzy kwerendę, która nie przechodzi i wywala błąd
+            if (this.appType == ApplicationType.update)
+                dataGridView1.Columns[0].Visible = false;
         }
 
         private void UndoButton_Click(object sender, EventArgs e)
@@ -354,8 +365,13 @@ namespace DataBaseEditor
 
         private string constructOrderByQuerySection()
         {
-            if (!String.IsNullOrEmpty(tbOrderBy.Text))
-                return " order by " + tbOrderBy.Text;
+            if (this.appType == ApplicationType.insert)
+            {
+                if (!String.IsNullOrEmpty(tbOrderBy.Text))
+                    return " order by " + tbOrderBy.Text;
+            }
+            if (this.appType == ApplicationType.update)
+                return " order by wyrobiskoNumerExcel";
             return "";
         }
 

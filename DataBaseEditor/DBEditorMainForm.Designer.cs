@@ -312,6 +312,7 @@
             "zmienione"});
             this.cbOryginalneCzyZmienione.Name = "cbOryginalneCzyZmienione";
             this.cbOryginalneCzyZmienione.Size = new System.Drawing.Size(100, 25);
+            this.cbOryginalneCzyZmienione.Visible = false;
             // 
             // cbKolor
             // 
