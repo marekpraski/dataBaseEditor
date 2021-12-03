@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="CellConverter.cs" />
     <Compile Include="DataGridCell.cs" />
+    <Compile Include="DatagridFormatter.cs" />
     <Compile Include="DataGridHandler.cs" />
     <Compile Include="DBEditorMainForm.cs">
       <SubType>Form</SubType>

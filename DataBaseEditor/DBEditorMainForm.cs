@@ -157,40 +157,38 @@ namespace DataBaseEditor
         //jest to pierwszy przycisk, który użytkownik może nacisnąć po wpisaniu kwerendy w pole tekstowe
         private void btnWyswietl_Click(object sender, EventArgs e)
         {
+            if (!configFileValidated)
+                return;
+
+            dbConnection = connector.getDBConnection(ConnectionDataSource.serverAndDatabaseNamesInFile, ConnectionTypes.sqlAuthorisation);
+            if (dbConnection == null)
+                return;
+
             //przekazuję kwerendę do DBConnectora w celu utworzenia połaczenia, wyciągam od razu nazwę bazy danych, jest potrzebna później
             this.sqlQueryForDisplayInDatagrid = constructQueryForDisplayInDatagrid();
-
-            if (configFileValidated)
+            //sql nie widzi różnicy pomiędzy lower i upper case a ma to znaczenie przy wyszukiwaniu słow kluczowych w kwerendzie
+            tableName = connector.getTableNameFromQuery(this.sqlQueryForDisplayInDatagrid);
+            if (dg1Handler.checkChangesExist())
             {
-                //tbSqlQuery.Text = this.sqlQuery;      
-                
-                //sql nie widzi różnicy pomiędzy lower i upper case a ma to znaczenie przy wyszukiwaniu słow kluczowych w kwerendzie
-                tableName = connector.getTableNameFromQuery(this.sqlQueryForDisplayInDatagrid);
-                dbConnection = connector.getDBConnection(ConnectionDataSource.serverAndDatabaseNamesInFile, ConnectionTypes.sqlAuthorisation);
-
-                if (dbConnection == null)
-                    return;
-                if (dg1Handler.checkChangesExist())
+                if (MyMessageBox.display("Czy zapisać zmiany?", MessageBoxType.YesNo) == MessageBoxResults.Yes)
                 {
-                    if (MyMessageBox.display("Czy zapisać zmiany?", MessageBoxType.YesNo) == MessageBoxResults.Yes)
-                    {
-                        //zaimplementować 
-                    }
-                }
-                else
-                {
-                    dg1Handler.Dispose();               //likwiduję starą instancję utworzoną w konstruktorze, bo jest to de facto wyświetlenie od zera i operacje na datagridzie od zera
-                    dg1Handler = new DataGridHandler();  //każdy datagrid musi mieć swoją instancję DataGridHandlera
-                    dataGridView1.Rows.Clear();
-                    dataGridView1.Refresh();
-                    datagridRowIndex = 0;
-                    loadNextButton.Visible = false;
-                    setUpDatagrid();
+                    saveButton_Click(null, null);
                 }
             }
+            resetSettings();
+            setUpThisForm();
+
             tbLike.Text = "";   //jeżeli nie wyczyszczę, to przy próbie wyświetlenia na mapie wyrobisk zaznaczonych w datagridzie tworzy kwerendę, która nie przechodzi i wywala błąd
-            if (this.appType == ApplicationType.update)
-                dataGridView1.Columns[0].Visible = false;
+        }
+
+        private void resetSettings()
+        {
+            dg1Handler.Dispose();               //likwiduję starą instancję utworzoną w konstruktorze, bo jest to de facto wyświetlenie od zera i operacje na datagridzie od zera
+            dg1Handler = new DataGridHandler();  //każdy datagrid musi mieć swoją instancję DataGridHandlera
+            dataGridView1.Rows.Clear();
+            dataGridView1.Refresh();
+            datagridRowIndex = 0;
+            loadNextButton.Visible = false;
         }
 
         private void UndoButton_Click(object sender, EventArgs e)
@@ -233,7 +231,7 @@ namespace DataBaseEditor
         {
             if (dbData != null && datagridRowIndex <= dbData.Count)
             {
-                loadRowPacket();
+                loadDataPacket();
             }
         }
 
@@ -360,63 +358,49 @@ namespace DataBaseEditor
 
         #endregion
 
-        #region metody do edycji i zapisu danych w datagridzie
+        #region metody do formatowania tej formatki i jej elementów
 
-        private void setUpDatagrid()
+        private void setUpThisForm()
         {
-
             //pierwsza kolumna nie jest do edycji, w niej musi być primaryKey;
             dataGridView1.Columns[0].ReadOnly = true;
             dataGridView1.Columns[0].DefaultCellStyle.BackColor = Color.LightGray;
 
-            DBReader reader = new DBReader(dbConnection);
-            queryData = reader.readFromDB(this.sqlQueryForDisplayInDatagrid);
-            if (queryData == null)
+            queryData = new DBReader(dbConnection).readFromDB(this.sqlQueryForDisplayInDatagrid);
+
+            if (queryData == null || queryData.dataRowsNumber == 0)
                 return;
 
-            //jeżeli kwerenda błędna to nie zwróci wyników
-            //przypadki błędnej kwerendy obsługiwane są przez DBReader
-            if (queryData.getHeaders().Count != 0)
-            {
-                dbData = queryData.getQueryData();
-                List<string> columnHeaders = queryData.getHeaders();
+            dbData = queryData.getQueryData();
+            List<string> columnHeaders = queryData.getHeaders();
 
-                //dopasowuję formatkę do wyników nowej kwerendy
-
-                changeMainFormLayout(columnHeaders.Count, ref dataGridView1);
-
-                //nazywam nagłówki
-                for (int i = 0; i < queryData.getHeaders().Count; i++)
-                {
-                    dataGridView1.Columns[i].HeaderText = columnHeaders[i];
-                    dataGridView1.Columns[i].Name = columnHeaders[i];
-                }
-            }
-            if (dbData != null)
-            {
-                loadRowPacket();
-
-                if (rowsLoaded < dbData.Count)
-                {
-                    int rowsRemaining = dbData.Count - rowsLoaded;
-
-                    loadNextButton.Visible = true;
-                    loadNextButton.Enabled = true;
-                    remainingRowsLabel.Visible = true;
-                    remainingRowsLabel.Text = "zostało " + rowsRemaining;
-
-                    if (rowsRemaining > ProgramSettings.numberOfRowsToLoad)
-                    {
-                        loadNextButton.Text = "+" + ProgramSettings.numberOfRowsToLoad;
-                        
-                    }
-                }
-            }
+            //dopasowuję formatkę do wyników nowej kwerendy
+            changeMainFormLayout(columnHeaders, dataGridView1);
+            loadDataPacket();
+            setInfoHowManyRowsAreRemaining();
         }
 
-        private void loadRowPacket()
+        //przyjmuje liczbę nagłówków z kwerendy oraz datagrid, w którym trzeba dopasować liczbę kolumn
+        private void changeMainFormLayout(List<string> columnHeaders, DataGridView dataGrid)
         {
-            for (int i = datagridRowIndex; i< ProgramSettings.numberOfRowsToLoad + rowsLoaded; i++)
+            List<int> colWidths = queryData.getColumnWidths(dataGrid.Font, 30);         //szerokości kolummn datagridu z danych z kwerendy
+            string[] hiddenColumns = null;
+            if (this.appType == ApplicationType.update)
+                hiddenColumns = new string[] { "idLinieCentralne" };
+
+            formatter.formatDatagrid(dataGrid, columnHeaders, colWidths, hiddenColumns);
+            formatter.changeDisplayButtonLocation(ref btnWyswietl);
+            formatter.changeSaveButtonLocation(ref saveButton);
+            formatter.changeUndoButtonLocation(ref undoButton);
+            formatter.changeLoadNextButtonLocation(loadNextButton);
+            formatter.changeRemainingRowsLabelLocation(remainingRowsLabel);
+            formatter.setTextboxSize(ref tbSqlQuery);
+            this.Width = formatter.calculateFormWidth();
+        }
+
+        private void loadDataPacket()
+        {
+            for (int i = datagridRowIndex; i < ProgramSettings.numberOfRowsToLoad + rowsLoaded; i++)
             {
                 if (i < dbData.Count)
                 {
@@ -426,7 +410,6 @@ namespace DataBaseEditor
                     dg1Handler.addDataGridIndex(i, primaryKey);
                 }
             }
-
 
             if (dataGridView1.AllowUserToAddRows)
             {
@@ -456,21 +439,28 @@ namespace DataBaseEditor
             }
         }
 
-        //przyjmuje liczbę nagłówków z kwerendy oraz datagrid, w którym trzeba dopasować liczbę kolumn
-        private void changeMainFormLayout(int numberOfHeaders, ref DataGridView dataGrid)
+        private void setInfoHowManyRowsAreRemaining()
         {
-            List<int> colWidths = queryData.getColumnWidths(dataGrid.Font,30);         //szerokości kolummn datagridu z danych z kwerendy
-            formatter.formatDatagrid(ref dataGrid, numberOfHeaders, colWidths);
-            formatter.changeDisplayButtonLocation(ref btnWyswietl);
-            formatter.changeSaveButtonLocation(ref saveButton);
-            formatter.changeUndoButtonLocation(ref undoButton);
-            formatter.changeLoadNextButtonLocation(loadNextButton);
-            formatter.changeRemainingRowsLabelLocation(remainingRowsLabel);
-            formatter.setTextboxSize(ref tbSqlQuery);
-            this.Width = formatter.calculateFormWidth();
+            if (rowsLoaded < dbData.Count)
+            {
+                int rowsRemaining = dbData.Count - rowsLoaded;
+
+                loadNextButton.Visible = true;
+                loadNextButton.Enabled = true;
+                remainingRowsLabel.Visible = true;
+                remainingRowsLabel.Text = "zostało " + rowsRemaining;
+
+                if (rowsRemaining > ProgramSettings.numberOfRowsToLoad)
+                {
+                    loadNextButton.Text = "+" + ProgramSettings.numberOfRowsToLoad;
+                }
+            }
         }
 
- 
+        #endregion
+
+        #region metody pomocnicze przy edycji danych w datagridzie
+
         private string generateUpdateQuery(string tableName, DataGridCell cell)
         {
             int columnIndex = cell.getCellIndex(cellIndexTypes.columnIndex);
