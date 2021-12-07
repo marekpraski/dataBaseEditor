@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
@@ -18,25 +19,53 @@ namespace DataBaseEditor
         private int defaultNrOfDatagridColumns = 4;
 
 
-        public void formatDatagrid(DataGridView dataGrid, int numberOfHeaders, List<int> colWidths)
+        public void formatDatagrid(DataGridView dataGrid, List<string> columnHeaders, List<int> colWidths, string[] hiddenColumns)
         {
-            resetDatagrid(ref dataGrid);
-
-            //datagrid ma przynajmniej tyle kolumn ile określa zmienna defaultNrOfDatagridColumns, więc po resecie datagridu kolumny mogę tylko dodać, jeżeli nagłówków jest więcej niż ta liczba
-            addNewColumns(dataGrid, numberOfHeaders);
+            resetDatagrid(dataGrid, columnHeaders.Count);
+            addNewColumns(dataGrid, columnHeaders.Count);
             resizeColumns(dataGrid, colWidths);
+            nameColumnHeaders(dataGrid, columnHeaders);
+            hideColumns(dataGrid, hiddenColumns);
+            resizeDatagrid(dataGrid, hiddenColumns);
+        }
 
-            //określam i ograniczam szerokość datagridu            
-            dataGridWidth = dataGrid.Columns.GetColumnsWidth(DataGridViewElementStates.None) + dataGrid.RowHeadersWidth + dataGrid.Margin.Left + dataGrid.Margin.Right + dataGridColumnPadding;
-
-            if (dataGridWidth > maxDatagridWidth)     //ograniczam max szerokość tworzonego datagrida 
+        /// <summary>
+        /// wraca  datagrid do jego pierwotnych rozmiarów, tj do tylu kolumn ile określa zmienna defaultNrOfDatagridColumns
+        /// </summary>
+        private void resetDatagrid(DataGridView dataGrid, int numberOfColumns)
+        {
+            if (dataGrid.ColumnCount > defaultNrOfDatagridColumns)
             {
-                dataGridWidth = maxDatagridWidth;
-                dataGrid.Width = dataGridWidth;      //celowa redundancja, bo używam zmiennej dataGridWidth do ustawienia położenia buttonów i szerokości głównej formatki
+                for (int i = numberOfColumns - 1; i >= defaultNrOfDatagridColumns; i--)
+                {
+                    dataGrid.Columns.Remove(dataGrid.Columns[i]);
+                }
             }
-            else
+            //zmieniam nazwy kolumn na oryginalne, bo w razie gdyby obecna kwerenda miała mniej niż 4 kolumny, to zostaną w nich stare napisy
+            for (int colNr = 0; colNr < defaultNrOfDatagridColumns; colNr++)
             {
-                dataGrid.Width = dataGridWidth;
+                dataGrid.Columns[colNr].HeaderText = "Column " + colNr;
+                dataGrid.Columns[colNr].Width = dafaultColWidth;
+            }
+        }
+
+        /// <summary>
+        /// datagrid ma przynajmniej tyle kolumn ile określa zmienna defaultNrOfDatagridColumns, więc po resecie datagridu kolumny mogę tylko dodać, jeżeli nagłówków jest więcej niż ta liczba
+        /// </summary>
+        private void addNewColumns(DataGridView dataGrid, int numberOfHeaders)
+        {
+            if (numberOfHeaders > defaultNrOfDatagridColumns)
+            {
+                int numberOfAddedColumn = 0;      //zmienna użyta do nazywania kolejnych dodawanych kolumn
+                for (int i = 0; i < numberOfHeaders - defaultNrOfDatagridColumns; i++)
+                {
+                    DataGridViewColumn col = new DataGridViewTextBoxColumn();
+                    dataGrid.Columns.Add(col);
+                    col.HeaderText = "added";
+                    col.Name = "added" + numberOfAddedColumn;
+                    columnsAdded.Add(col);
+                    numberOfAddedColumn++;
+                }
             }
         }
 
@@ -60,41 +89,56 @@ namespace DataBaseEditor
             }
         }
 
-        private void addNewColumns(DataGridView dataGrid, int numberOfHeaders)
+        private void nameColumnHeaders(DataGridView dataGrid, List<string> columnHeaders)
         {
-            if (numberOfHeaders > defaultNrOfDatagridColumns)
+            //nazywam nagłówki
+            for (int i = 0; i < columnHeaders.Count; i++)
             {
-                int numberOfAddedColumn = 0;      //zmienna użyta do nazywania kolejnych dodawanych kolumn
-                for (int i = 0; i < numberOfHeaders - defaultNrOfDatagridColumns; i++)
-                {
-                    DataGridViewColumn col = new DataGridViewTextBoxColumn();
-                    dataGrid.Columns.Add(col);
-                    col.HeaderText = "added";
-                    col.Name = "added" + numberOfAddedColumn;
-                    columnsAdded.Add(col);
-                    numberOfAddedColumn++;
-                }
+                dataGrid.Columns[i].HeaderText = columnHeaders[i];
+                dataGrid.Columns[i].Name = columnHeaders[i];
             }
         }
 
-        //wraca  datagrid do jego pierwotnych rozmiarów, tj do tylu kolumn ile określa zmienna defaultNrOfDatagridColumns
-        private void resetDatagrid(ref DataGridView dataGrid)
+        private void hideColumns(DataGridView dataGrid, string[] hiddenColumns)
         {
-            dataGridWidth = 0;
-            if (columnsAdded.Count > 0)   //w czasie tej sesji dodane zostały columny
+            if (hiddenColumns == null)
+                return;
+            for (int i = 0; i < hiddenColumns.Length; i++)
             {
-                foreach (DataGridViewColumn col in columnsAdded)
-                {
-                    dataGrid.Columns.Remove(col);
-                }
+                dataGrid.Columns[hiddenColumns[i]].Visible = false;
             }
-            columnsAdded.Clear();
-            //zmieniam nazwy kolumn na oryginalne, bo w razie gdyby obecna kwerenda miała mniej niż 4 kolumny, to zostaną w nich stare napisy
-            for (int colNr = 0; colNr < defaultNrOfDatagridColumns; colNr++)
+        }
+
+        /// <summary>
+        /// określam i ograniczam szerokość datagridu    
+        /// </summary>
+        private void resizeDatagrid(DataGridView dataGrid, string[] hiddenColumns)
+        {
+            int paddings = dataGrid.RowHeadersWidth + dataGrid.Margin.Left + dataGrid.Margin.Right + dataGridColumnPadding;
+            int hiddenColumnsWidth = getHiddenColumnsTotalWidth(dataGrid, hiddenColumns);
+            dataGridWidth = dataGrid.Columns.GetColumnsWidth(DataGridViewElementStates.None) + paddings - hiddenColumnsWidth;
+
+            if (dataGridWidth > maxDatagridWidth)     //ograniczam max szerokość tworzonego datagrida 
             {
-                dataGrid.Columns[colNr].HeaderText = "Column " + colNr;
-                dataGrid.Columns[colNr].Width = dafaultColWidth;
+                dataGridWidth = maxDatagridWidth;
+                dataGrid.Width = dataGridWidth;      //celowa redundancja, bo używam zmiennej dataGridWidth do ustawienia położenia buttonów i szerokości głównej formatki
             }
+            else
+            {
+                dataGrid.Width = dataGridWidth;
+            }
+        }
+
+        private int getHiddenColumnsTotalWidth(DataGridView dataGrid, string[] hiddenColumns)
+        {
+            int totalWidth = 0;
+            if (hiddenColumns == null)
+                return 0;
+            for (int i = 0; i < hiddenColumns.Length; i++)
+            {
+                totalWidth += dataGrid.Columns[hiddenColumns[i]].Width;
+            }
+            return totalWidth;
         }
     }
 }
