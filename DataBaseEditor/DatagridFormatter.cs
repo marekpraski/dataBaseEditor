@@ -21,7 +21,7 @@ namespace DataBaseEditor
 
         public void formatDatagrid(DataGridView dataGrid, List<string> columnHeaders, List<int> colWidths, string[] hiddenColumns)
         {
-            resetDatagrid(dataGrid);
+            resetDatagrid(dataGrid, columnHeaders.Count);
             addNewColumns(dataGrid, columnHeaders.Count);
             resizeColumns(dataGrid, colWidths);
             nameColumnHeaders(dataGrid, columnHeaders);
@@ -32,17 +32,15 @@ namespace DataBaseEditor
         /// <summary>
         /// wraca  datagrid do jego pierwotnych rozmiarów, tj do tylu kolumn ile określa zmienna defaultNrOfDatagridColumns
         /// </summary>
-        private void resetDatagrid(DataGridView dataGrid)
+        private void resetDatagrid(DataGridView dataGrid, int numberOfColumns)
         {
-            dataGridWidth = 0;
-            if (columnsAdded.Count > 0)   //w czasie tej sesji dodane zostały columny
+            if (dataGrid.ColumnCount > defaultNrOfDatagridColumns)
             {
-                foreach (DataGridViewColumn col in columnsAdded)
+                for (int i = numberOfColumns - 1; i >= defaultNrOfDatagridColumns; i--)
                 {
-                    dataGrid.Columns.Remove(col);
+                    dataGrid.Columns.Remove(dataGrid.Columns[i]);
                 }
             }
-            columnsAdded.Clear();
             //zmieniam nazwy kolumn na oryginalne, bo w razie gdyby obecna kwerenda miała mniej niż 4 kolumny, to zostaną w nich stare napisy
             for (int colNr = 0; colNr < defaultNrOfDatagridColumns; colNr++)
             {

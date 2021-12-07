@@ -21,7 +21,7 @@ namespace DataBaseEditor
     {
         private enum ApplicationType { insert, update}
 
-        private ApplicationType appType = ApplicationType.update;       //ustawić odpowiednio dla kompilacji dla PRGW (insert) lub Bogdanka (update)
+        private ApplicationType appType = ApplicationType.insert;       //ustawić odpowiednio dla kompilacji dla PRGW (insert) lub Bogdanka (update)
         private UtilityTools.NumberHandler numberHandler = new UtilityTools.NumberHandler();
         private DataGridHandler dg1Handler;
         private FormFormatter formatter;
