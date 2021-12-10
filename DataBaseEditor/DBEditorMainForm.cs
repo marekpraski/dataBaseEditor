@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
 using DatabaseInterface;
 using System.Windows.Forms;
 using System.Data.SqlClient;
@@ -11,7 +8,6 @@ using MapInterface;
 using System.Diagnostics;
 using MapInterfaceObjects;
 using InterProcessCommunication;
-using System.Xml.Linq;
 using System.IO;
 using UtilityTools;
 
@@ -21,7 +17,7 @@ namespace DataBaseEditor
     {
         private enum ApplicationType { insert, update}
 
-        private ApplicationType appType = ApplicationType.insert;       //ustawić odpowiednio dla kompilacji dla PRGW (insert) lub Bogdanka (update)
+        private ApplicationType appType = ApplicationType.update;       //ustawić odpowiednio dla kompilacji dla PRGW (insert) lub Bogdanka (update)
         private UtilityTools.NumberHandler numberHandler = new UtilityTools.NumberHandler();
         private DataGridHandler dg1Handler;
         private FormFormatter formatter;
@@ -70,11 +66,11 @@ namespace DataBaseEditor
             else if (this.appType == ApplicationType.update)
             {
                 //TODO kwerendę zmienić po zmianie bazy danych i struktury
-                tbSqlQuery.Text = @"Select WyrobiskaLinieCentralne.idLinieCentralne, MaincoalWyrobiska.id_wyrobiska,cast(WyrobiskaLinieCentralne.wyrobiskoNumerExcel as int) wyrobiskoNumerExcel, 
-                                    MaincoalWyrobiska.nazwaWyrobiska,WyrobiskaLinieCentralne.odcinekNumer,WyrobiskaLinieCentralne.odcinekMetrStart, WyrobiskaLinieCentralne.odcinekMetrKoniec, 
-                                    WyrobiskaLinieCentralne.wyrobiskoDlugoscExcel, MaincoalWyrobiska.rodzajWyrobiska, MaincoalWyrobiska.id_poziomu, MaincoalWyrobiska.id_pokladu, WyrobiskaLinieCentralne.zatwierdzone
+                tbSqlQuery.Text = @"Select WyrobiskaLinieCentralne.idLinieCentralne, LustroWyrobiska.id_wyrobiska,cast(WyrobiskaLinieCentralne.wyrobiskoNumerExcel as int) wyrobiskoNumerExcel, LustroWyrobiska.numerEwidencyjny,
+                                    LustroWyrobiska.nazwaWyrobiska,WyrobiskaLinieCentralne.odcinekNumer,WyrobiskaLinieCentralne.odcinekMetrStart, WyrobiskaLinieCentralne.odcinekMetrKoniec, 
+                                    WyrobiskaLinieCentralne.wyrobiskoDlugoscExcel, LustroWyrobiska.rodzajWyrobiska, LustroWyrobiska.id_poziomu, LustroWyrobiska.id_pokladu, WyrobiskaLinieCentralne.zatwierdzone
 	                                 from WyrobiskaLinieCentralne
-                                    inner join MaincoalWyrobiska on WyrobiskaLinieCentralne.id_wyrobiska = MaincoalWyrobiska.id_wyrobiska 
+                                    inner join LustroWyrobiska on WyrobiskaLinieCentralne.id_wyrobiska = LustroWyrobiska.id_wyrobiska 
                                     where WyrobiskaLinieCentralne.zatwierdzone =  ";
                 tbSqlQuery.ReadOnly = true;
                 cbZatwierdzone.SelectedIndex = 0;
@@ -128,7 +124,7 @@ namespace DataBaseEditor
             {
                 //TODO kwerendę zmienić po zmianie bazy danych i struktury
                 MessageBox.Show("błąd odczytu ustawień z pliku kwerenda.txt " + e.Message + e.StackTrace);
-                txt = @"SELECT * FROM MaincoalWyrobiska  where id_wyrobiska not in (select id_wyrobiska from WyrobiskaLinieCentralne)";
+                txt = @"SELECT * FROM LustroWyrobiska  where id_wyrobiska not in (select id_wyrobiska from WyrobiskaLinieCentralne)";
             }
             return txt;
         }
@@ -337,9 +333,9 @@ namespace DataBaseEditor
             if (!String.IsNullOrEmpty(tbLike.Text))
             {
                 if (queryPart1.ToLower().Contains("where"))
-                    return " and MaincoalWyrobiska.nazwaWyrobiska like '%" + tbLike.Text + "%' ";
+                    return " and LustroWyrobiska.nazwaWyrobiska like '%" + tbLike.Text + "%' ";
                 else
-                    return " where MaincoalWyrobiska.nazwaWyrobiska like '%" + tbLike.Text + "%' ";
+                    return " where LustroWyrobiska.nazwaWyrobiska like '%" + tbLike.Text + "%' ";
             }
             return "";
         }
