@@ -284,7 +284,7 @@
             this.tsUruchomModulGraficzny.Size = new System.Drawing.Size(23, 22);
             this.tsUruchomModulGraficzny.Text = "toolStripButton1";
             this.tsUruchomModulGraficzny.ToolTipText = "Uruchom moduł graficzny";
-            this.tsUruchomModulGraficzny.Click += new System.EventHandler(this.mapaToolStripMenuItem_Click);
+            this.tsUruchomModulGraficzny.Click += new System.EventHandler(this.tsUruchomModulGraficzny_Click);
             // 
             // toolStripSeparator1
             // 

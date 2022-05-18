@@ -74,9 +74,9 @@ namespace DataBaseEditor
                                     where WyrobiskaLinieCentralne.zatwierdzone =  ";
                 tbSqlQuery.ReadOnly = true;
                 cbZatwierdzone.SelectedIndex = 0;
-                undoButton.Visible = true;
-                saveButton.Visible = true;
-                dataGridView1.EditMode = DataGridViewEditMode.EditOnKeystrokeOrF2;
+                undoButton.Visible = false;
+                saveButton.Visible = false;
+                dataGridView1.EditMode = DataGridViewEditMode.EditProgrammatically;
                 label4.Visible = false;
                 tbOrderBy.Visible = false;
             }                
@@ -490,7 +490,7 @@ namespace DataBaseEditor
          * 4. add-in ustanawia połączenie do bazy i wysyła do programu głównego potwierdzenie, że jest w pełni funkcjonalny
          * 5. program główny uruchamia pasek narzędziowy add-ina wywołując właściwy key-in
          **/
-        private void mapaToolStripMenuItem_Click(object sender, EventArgs e)
+        private void tsUruchomModulGraficzny_Click(object sender, EventArgs e)
         {
             this.ipcReceiver = IPCReceiver.getInstance();
             if (this.ipcReceiver.getDataReceivedEventInvocationList() == 0)
@@ -674,7 +674,7 @@ namespace DataBaseEditor
         {
             QueryData liniaCentralnaQueryData = getLinestringData();
             MapObjectsTools tools = new MapObjectsTools(this.dbConnection);
-            List<IElementGraficzny> elems = tools.getLinestringsFromSqlData(liniaCentralnaQueryData, (int)TypObiektuMapy.LiniaCentralnaWyrobiska);
+            List<IElementGraficzny> elems = tools.getLinestringsFromSqlData(liniaCentralnaQueryData, (int)TypObiektuMapy.LinieCentralneWyrobisk);
             modifyDblinks(elems, liniaCentralnaQueryData);
             return elems;
         }
