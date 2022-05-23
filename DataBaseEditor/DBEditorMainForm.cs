@@ -71,7 +71,7 @@ namespace DataBaseEditor
                                     WyrobiskaLinieCentralne.wyrobiskoDlugoscExcel, LustroWyrobiska.rodzajWyrobiska, LustroWyrobiska.id_poziomu, LustroWyrobiska.id_pokladu, WyrobiskaLinieCentralne.zatwierdzone
 	                                 from WyrobiskaLinieCentralne
                                     inner join LustroWyrobiska on WyrobiskaLinieCentralne.id_wyrobiska = LustroWyrobiska.id_wyrobiska 
-                                    where WyrobiskaLinieCentralne.zatwierdzone =  ";
+                                    where WyrobiskaLinieCentralne.czyHistoria=0 and WyrobiskaLinieCentralne.zatwierdzone =  ";
                 tbSqlQuery.ReadOnly = true;
                 cbZatwierdzone.SelectedIndex = 0;
                 undoButton.Visible = false;
